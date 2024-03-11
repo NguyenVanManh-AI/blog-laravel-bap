@@ -1,0 +1,140 @@
+#table .select{
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Table */
+.btn {
+    transition: all 1s ease;
+}
+.cell1 {
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+.cell1 img {
+    width: 30px;
+    object-fit: cover;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+/* toggle button */
+.knobs,
+.layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.button2 {
+    position: relative;
+    top: 50%;
+    width: 74px;
+    height: 36px;
+    margin: -20px auto 0 auto;
+    overflow: hidden;
+}
+
+.button2.r,
+.button2.r .layer {
+    border-radius: 100px;
+}
+
+.button2.b2 {
+    border-radius: 2px;
+}
+
+.checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.knobs {
+    z-index: 2;
+}
+
+.layer {
+    width: 100%;
+    background-color: #ebf7fc;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+
+
+/* Button 6 */
+.button-6 {
+    overflow: visible;
+}
+
+.button-6 .knobs:before {
+    content: "YES";
+    position: absolute;
+    align-content: center;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 10px 4px;
+    background-color: #03a9f4;
+    border-radius: 50%;
+}
+
+.button-6 .layer,
+.button-6 .knobs,
+.button-6 .knobs:before {
+    transform: rotateZ(0);
+    transition: 0.4s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+.button-6 .checkbox:checked + .knobs {
+    transform: rotateZ(-180deg);
+}
+
+.button-6 .checkbox:checked + .knobs:before {
+    content: "NO";
+    background-color: #f44336;
+    transform: rotateZ(180deg);
+}
+
+.button-6 .checkbox:checked ~ .layer {
+    background-color: #fcebeb;
+    transform: rotateZ(180deg);
+}
+.big-toggle {
+    position: relative;
+    padding-top:20px;
+    display: flex;
+    width: 100px;
+    height: 100%;
+    align-content: center;
+    align-items: center;
+}
+
+.name-user a:hover {
+    text-decoration: none !important;
+    color: #007bff;
+}
+#pagination_container {
+    position: unset;
+}
+#page_bottom {
+    position: absolute;
+    bottom: 6px;
+}

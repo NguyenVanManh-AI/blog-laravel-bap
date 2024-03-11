@@ -1,0 +1,79 @@
+#bodytable .btn {
+    font-size: 12px;
+    justify-content: center;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+#table .select{
+    font-size: 12px;
+    cursor: pointer;
+}
+#toptable {
+    display: flex;
+    padding: 30px 20px 10px 20px;
+    margin-bottom: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#add_button{
+    position:absolute;
+    top: 0px;
+    right: 0px;
+}
+#add_button button{
+    font-size: 22px;
+    display: flex;
+    line-height: 100%;
+    align-items: center;
+    border-radius: 15px;
+}
+.btn-pers {
+  position: relative;
+  padding: 16px 16px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #0085FF;
+  background-color: #fff;
+  border: none;
+  border-radius: 45px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+  transform: translateX(-50%);
+}
+
+.btn-pers:hover {
+  background-color: #0085FF;
+  box-shadow: 0px 15px 20px rgba(46, 138, 229, 0.4);
+  color: #fff;
+  transform: translate(-50%, -7px);
+}
+
+.btn-pers:active {
+  transform: translate(-50%, -1px);
+}
+.btn {
+    transition: all 1s ease;
+}
+.cell1 {
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+.cell1 img {
+    width: 30px;
+    object-fit: cover;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin-right: 6px;
+}
+#pagination_container {
+    position: unset;
+}
+#page_bottom {
+    position: absolute;
+    bottom: 6px;
+}

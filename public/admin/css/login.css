@@ -1,0 +1,77 @@
+.form-control:focus {
+    box-shadow: none;
+}
+
+.login {
+    min-height: 100vh;
+}
+
+.bg-image {
+    /* background-image: url("{{asset('blog/image/login.jfif')}}"); */
+    background-size: cover;
+    background-position: center;
+}
+
+.login-heading {
+    font-weight: 300;
+}
+
+.btn-login {
+    font-size: 0.9rem;
+    letter-spacing: 0.05rem;
+    padding: 0.75rem 1rem;
+}
+
+.btn-google {
+    color: black !important;
+    background-color: white;
+}
+
+.social {
+    height: 40px;
+    /* border: 1px solid gray; */
+    border-radius: 5px;
+    /* text-transform: uppercase; */
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    line-height: 40px;
+    align-content: center;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.social a {
+    display: flex;
+    height: 100%;
+    color: black;
+    line-height: 100%;
+    align-content: center;
+    align-items: center;
+    font-weight: 500;
+    padding: 5px;
+    color: white;
+    width: 100%;
+    justify-content: center;
+}
+
+.social a:hover {
+    text-decoration: none;
+}
+
+.social img {
+    height: 100%;
+    padding: 2px;
+    width: auto;
+    border-radius: 40px;
+    background-color: white;
+    margin-right: 20px;
+}
+
+.social.google {
+    background-color: #4284F3;
+}
+
+.social.github {
+    background-color: black;
+}

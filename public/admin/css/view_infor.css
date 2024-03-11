@@ -1,0 +1,110 @@
+#title_update_infor {
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 20px;
+    color: #F84B2F;
+}
+
+label {
+    color: #F84B2F;
+}
+
+#big_update>img {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    opacity: 0.9;
+    min-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+}
+
+form {
+    background-color: #000;
+    box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgb(204, 219, 232) -3px -3px 6px 1px inset;
+    padding: 30px 40px;
+    border-radius: 10px;
+    position: relative;
+    background-color: white;
+    background-color: rgba(255, 255, 255, 0.545);
+    font-weight: bold;
+}
+
+#upload_img {
+    width: 100%;
+}
+
+#image-preview,
+#image-preview_imagesforever {
+    width: 100%;
+    height: auto;
+    display: none;
+}
+
+#cancel-btn,
+#cancel-btn_imagesforever {
+    position: absolute;
+    top: -5px;
+    right: -9px;
+    width: 20px;
+    display: none;
+    cursor: pointer;
+}
+
+#image-container,
+#image-container_imagesforever {
+    position: relative;
+    display: none;
+}
+
+#dropbox *,
+#dropbox_imagesforever * {
+    cursor: pointer;
+}
+
+#dropbox,
+#dropbox_imagesforever {
+    cursor: pointer;
+    width: 100%;
+    height: auto;
+    background: #f8f8f8;
+    border-radius: 10px;
+    color: dimgray;
+    padding: 6px 6px;
+    position: relative;
+    cursor: pointer;
+}
+
+#image,
+#image_imagesforever {
+    opacity: 0;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+}
+
+#dropbox:hover,
+#dropbox_imagesforever:hover {
+    background: #E8F5E9;
+}
+
+#dropbox p,
+#dropbox_imagesforever p {
+    text-align: center;
+    margin: 0px;
+    line-height: 100%;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: #64bbf0;
+}
+
+#dropbox p i,
+#dropbox_imagesforever p i {
+    margin: 0px 10px;
+}
