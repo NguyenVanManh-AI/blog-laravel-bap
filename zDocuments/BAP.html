@@ -1,0 +1,3080 @@
+
+https://bapjsc-my.sharepoint.com/personal/cuongpnv_bap_jp/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fcuongpnv%5Fbap%5Fjp%2FDocuments%2F%5BIntern%5D%20Fullstack%20PHP%20%2D%20ReactJS&ct=1691652435368&or=Teams%2DHL&ga=1&OR=Teams%2DHL&CT=1695636879459&clickparams=eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiIyNy8yMzA5MDExMjIyOSIsIkhhc0ZlZGVyYXRlZFVzZXIiOmZhbHNlfQ%3D%3D
+
+- Template có sẵn : https://adminlte.io/themes/v3/pages/UI/general.html# - Cài Laragon ( cài tất cả các phiên bản laravel xem có bị lỗi gì không) + https://laragon.org/docs/install.html + README.md MySQL login*: user: root password: *The default username
+is 'root' and empty password ---------------------------------------------------- Document Root: C:\laragon\www ---------------------------------------------------- Hotkey to open Terminal globally: CTRL+ALT+T For more information, please visit: http://laragon.org
+Thank you for using Laragon. leokhoa@gmail.com + Hoàn toàn giống Xampp chỉ là nó có thể thay đổi phiên bản thôi + Trang chủ : http://localhost/ + Mysql database cũng tương tự + -----------------------------Service----------------------- Service Bạn đang
+nói đến Service trong thư mục app/Services. Thư mục app/Services thường được sử dụng để chứa các class dịch vụ tùy chỉnh của bạn, đây là một phần của cơ chế Dependency Injection trong Laravel. Mục đích chính của việc sử dụng các class dịch vụ trong thư
+mục app/Services là để tách logic xử lý khỏi controllers và các phần khác trong ứng dụng. Điều này giúp mã của bạn trở nên dễ đọc hơn, dễ bảo trì hơn và dễ dàng kiểm thử. Ví dụ, nếu bạn có một chức năng cần thực hiện một số xử lý phức tạp như gửi email,
+xử lý dữ liệu, gọi API bên ngoài, bạn có thể tạo một class dịch vụ trong thư mục app/Services để thực hiện các tác vụ này. Sau đó, bạn có thể tiêm nó vào controller hoặc bất kỳ nơi nào cần sử dụng thông qua Dependency Injection. Ví dụ về cách sử dụng
+một class dịch vụ trong controller: use App\Services\MyService; class MyController extends Controller { protected $myService; public function __construct(MyService $myService) { $this->myService = $myService; } public function index() { $data = $this->myService->getData();
+// ... } } Trong ví dụ trên, $myService là một instance của MyService class, và bạn có thể gọi các phương thức của class này để thực hiện các tác vụ cụ thể. Điều này giúp bạn giữ cho logic của bạn được tách ra một cách rõ ràng và sẽ làm cho controllers
+của bạn trở nên nhẹ nhàng và dễ kiểm thử hơn. + Mục đích của Service là + Tách phần code logic từ Controller ra để cho controller nhẹ nhàng hơn . + Nếu nhiều chỗ dùng lui dùng tới phần code đó => tách ra để ở service => controller nào cần thì bỏ vào .
++ Không có câu lệnh tạo file Service (tự tạo bằng tay) p12 Ví dụ về Service : Service + C:\Users\ADMIN\Downloads\izisoft\p12nhadatexpress\app\Services\UserService.php Controllers + p12nhadatexpress\app\Http\Controllers\Admin\Report\Account\ReportCommentAccountController.php
++ p12nhadatexpress\app\Http\Controllers\Admin\Comment\CommentController.php + p12nhadatexpress\app\Http\Controllers\Admin\Comment\ReportCommentController.php + p12nhadatexpress\app\Http\Controllers\Admin\Event\EventReportController.php + p12nhadatexpress\app\Http\Controllers\Admin\PersonalPage\PersonalPageReportController.php
++ ... => Ví dụ hàm : $this->userService->blockUser => được dùng lại rất nhiều lần => tách ra khỏi Controller để cho vào Service , lúc này , làm nào cũng dùng được . 
+-----------------------------------------------Quản lý, tạo dữ liệu mẫu DB với migrate,seeder, factory--------------------------------------------------------------------- 
++ Seeder và Factory + Tạo Seeder: > php artisan make:seeder UsersTableSeeder 
++ Có hai trường hợp : 
+        + Tạo một dòng dữ liệu +
+<?php
+
+            namespace Database\Seeders;
+            
+            use Illuminate\Database\Seeder;
+            use Illuminate\Support\Facades\DB;
+            use Illuminate\Support\Facades\Hash;
+            use Faker\Factory as Faker;
+            
+            class UsersTableSeeder extends Seeder
+            {
+                public function run()
+                {
+                    DB::table('users')->insert([
+                        'name' => 'John Doe23',
+                        'email' => 'johndoe23@example.com',
+                        'password' => Hash::make('password223'),
+                        'google_id' => '11743319275979465222223',
+                        'github_id' => '8156345123',
+                        'username' => 'johnprovip23',
+                        'avatar' => 'storage/Blog/image/avatars/DRE07857 (1)_168897622923.jpg',
+                        'gender' => 1,
+            
+                    ]);
+                }
+            }
+        + Tạo nhiều dòng dữ liệu (khác nhau thì dùng Faker , không khác nhau thì cứ dùng như thế) . Dùng Factory : 
+            + sử dụng "fakerphp/faker": "^1.9" (hoặc cái này cũng có sẵn trong laravel rồi)
+                "require-dev": {
+                    "fakerphp/faker": "^1.9"
+                }
+        
+                => cài cái này thì ghi vào composer sau đó chạy lệnh : composer update
+
+            UsersTableSeeder.php : 
+            <?php
+            namespace Database\Seeders;
+
+            use Illuminate\Database\Seeder;
+            use Illuminate\Support\Facades\DB;
+            use Illuminate\Support\Facades\Hash;
+            use Faker\Factory as Faker;
+
+            class UsersTableSeeder extends Seeder
+            {
+                public function run()
+                {
+                    \App\Models\User::factory(3)->create();
+                }
+            }
+            
+            + Tạo file factory : php artisan make:factory UserFactory (có rồi thì không cần tạo nữa)
+            + bloglaravel\database\factories\UserFactory.php sẽ tương ứng với Model User 
+                + UserFactory.php
+                <?php
+                    namespace Database\Factories;
+        
+                    use App\Models\User;
+                    use Illuminate\Database\Eloquent\Factories\Factory;
+                    use Illuminate\Support\Str;
+                    use Illuminate\Support\Facades\Hash;
+        
+                    class UserFactory extends Factory
+                    {
+                        protected $model = User::class;
+        
+                        public function definition()
+                        {
+                            return [
+                                'name' => $this->faker->name,
+                                'email' => $this->faker->unique()->safeEmail,
+                                'password' => Hash::make('password'),
+                                'google_id' => $this->faker->randomNumber(9),
+                                'github_id' => $this->faker->randomNumber(8),
+                                'username' => $this->faker->userName,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                                'email_verified_at' => now(),
+                                'avatar' => 'storage/Blog/image/avatars/' . $this->faker->image('public/storage/Blog/image/avatars', 200, 200, null, false),
+                                'gender' => $this->faker->numberBetween(0, 1),
+                            ];
+        
+                        }
+                    }
+        + 'avatar' => 'storage/Blog/image/avatars/' . $this->faker->image('public/storage/Blog/image/avatars', 200, 200, null, false),
+            => Tạo ảnh lưu vào folder sau đó lấy đường dẫn lưu vào database . 
+
+        + Quan trọng : 'avatar' => 'storage/blog/image/avatars/' . $this->faker->image('public/storage/blog/image/avatars', 200, 200, null, false),
+            => trong Laravel 9 câu lệnh này có thể tạo ra ảnh 
+
+    + Chạy Seeder:
+        + Chạy 1 file :         
+            > php artisan db:seed --class=UsersTableSeeder
+        
+        + Chạy nhiều file cùng lúc 
+            > php artisan db:seed --class=Seeder1Seeder,Seeder2Seeder
+        
+    + Để tạo ra 10 mẫu dữ liệu khác biệt nhau thì ta làm như sau : 
+        + Để sử dụng Faker để tạo ra 10 mẫu dữ liệu khác nhau cho bảng users, bạn cần thực hiện các bước sau:
+        + Đảm bảo rằng bạn đã cài đặt gói Faker trong dự án Laravel của mình bằng cách thêm dòng sau vào tệp composer.json:
+
+
+    + Ex : Article : 
+        + php artisan make:seeder ArticlesTableSeeder
+        + bloglaravel\database\seeders\ArticlesTableSeeder.php : 
+            <?php
+                namespace Database\Seeders;
+        
+                use Illuminate\Database\Seeder;
+                use Illuminate\Support\Facades\DB;
+                use Illuminate\Support\Facades\Hash;
+                use Faker\Factory as Faker;
+        
+                class ArticlesTableSeeder extends Seeder
+                {
+                    /**
+                    * Run the database seeds.
+                    *
+                    * @return void
+                    */
+                    public function run()
+                    {
+                        \App\Models\Article::factory(3)->create();
+                    }
+                }
+
+        + php artisan make:factory ArticleFactory
+        + Tạo file bloglaravel\database\factories\ArticleFactory.php : 
+            <?php
+
+                namespace Database\Factories;
+
+                use App\Models\Article;
+                use App\Models\User;
+                use Illuminate\Database\Eloquent\Factories\Factory;
+                use Illuminate\Support\Str;
+
+                class ArticleFactory extends Factory
+                {
+                    /**
+                    * The name of the factory's corresponding model.
+                    *
+                    * @var string
+                    */
+                    protected $model = Article::class;
+
+                    /**
+                    * Define the model's default state.
+                    *
+                    * @return array
+                    */
+                    public function definition()
+                    {
+                        $userIds = User::pluck('id')->toArray();
+
+                        return [
+                            'id_user' => $this->faker->randomElement($userIds),
+                            'title' => $this->faker->sentence,
+                            'content' => $this->faker->paragraph,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+
+        + php artisan db:seed --class=ArticlesTableSeeder
+
+-----------------------------------------------Database relationship: one to one, one to many, ...---------------------------------------------------------------------
+Trong Laravel, có nhiều loại quan hệ giữa các bảng trong cơ sở dữ liệu, bao gồm:
+
+One-to-One Relationship (Quan hệ một một): Một bảng có một liên kết đến một bảng khác dựa trên một cặp khóa duy nhất.
+One-to-Many Relationship (Quan hệ một nhiều): Một bảng có nhiều liên kết đến một bảng khác thông qua một cặp khóa.
+Many-to-Many Relationship (Quan hệ nhiều nhiều): Nhiều bảng có thể có nhiều liên kết đến các bảng khác, thông qua một bảng trung gian.
+Has-Many-Through Relationship (Quan hệ một nhiều qua): Một bảng có thể có nhiều liên kết đến một bảng khác thông qua một bảng trung gian.
+Polymorphic Relationship (Quan hệ đa hình): Một bảng có thể có nhiều liên kết đến nhiều bảng khác, sử dụng một cột id và type.
+Many-to-Many Polymorphic Relationship (Quan hệ nhiều nhiều đa hình): Kết hợp quan hệ nhiều nhiều và đa hình, cho phép nhiều bảng tham gia quan hệ.
+Inverse Relationship (Quan hệ nghịch đảo): Quan hệ ngược của một quan hệ đã định nghĩa.
+
+Ví dụ về một số quan hệ trong Laravel:
+
+One-to-One Relationship:
+class User extends Model {
+    public function phone() {
+        return $this->hasOne(Phone::class);
+    }
+}
+class Phone extends Model {
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+}
+
+One-to-Many Relationship:
+class User extends Model {
+    public function posts() {
+        return $this->hasMany(Post::class);
+    }
+}
+class Post extends Model {
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+}
+
+Many-to-Many Relationship:
+class User extends Model {
+    public function roles() {
+        return $this->belongsToMany(Role::class);
+    }
+}
+
+class Role extends Model {
+    public function users() {
+        return $this->belongsToMany(User::class);
+    }
+}
+
+Has-Many-Through Relationship:
+class Country extends Model {
+    public function posts() {
+        return $this->hasManyThrough(Post::class, User::class);
+    }
+}
+
+Polymorphic Relationship:
+class Comment extends Model {
+    public function commentable() {
+        return $this->morphTo();
+    }
+}
+class Post extends Model {
+    public function comments() {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+}
+class Video extends Model {
+    public function comments() {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+}
+
+Many-to-Many Polymorphic Relationship:
+class Tag extends Model {
+    public function posts() {
+        return $this->morphedByMany(Post::class, 'taggable');
+    }
+
+    public function videos() {
+        return $this->morphedByMany(Video::class, 'taggable');
+    }
+}
+
+class Post extends Model {
+    public function tags() {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+
+class Video extends Model {
+    public function tags() {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+Đây chỉ là một số ví dụ về các quan hệ cơ bản trong Laravel. Mỗi loại quan hệ có cách sử dụng và định nghĩa riêng biệt, tùy thuộc vào cấu trúc dữ liệu của bạn.
+        
+------------------------------Validation Quickstart, Form Request, Custom Rule...------------------------------
+Validation Quickstart: (kiến thức cũ)
+    + Laravel cung cấp cách tiếp cận dễ dàng để thực hiện validation cho dữ liệu gửi từ form bằng cách sử dụng hàm validate() hoặc sử dụng lớp Validator.
+    Sử dụng hàm validate() trong Controller:
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed|min:6',
+        ]);
+
+        // ... Xử lý dữ liệu
+    }
+
+    Sử dụng lớp Validator:
+    use Illuminate\Support\Facades\Validator;
+
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|confirmed|min:6',
+    ]);
+
+
+    if ($validator->fails()) {
+        return redirect('register')
+                    ->withErrors($validator)
+                    ->withInput();
+        // => Ở đây có thể in lỗi ra 
+    }
+
+    <!-- Hoặc như dưới đây -->
+    if ($validator->fails()) {
+        foreach ($validator->errors()->all() as $error) {
+            Toastr::error($error);
+        }
+    }
+    // ... Xử lý dữ liệu
+
+----------------------------------
+Form Request:
+    Form Request là một cách tốt để tách logic validation ra khỏi Controller và giữ cho Controller trở nên gọn gàng hơn. Để tạo một Form Request, bạn có thể sử dụng lệnh Artisan như sau:
+    > php artisan make:request StoreUserRequest
+
+    Sau đó, trong StoreUserRequest.php:
+        public function authorize()
+        {
+            return true;
+        }
+        
+        public function rules()
+        {
+            return [
+                'name' => 'required|max:255',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|confirmed|min:6',
+            ];
+        }
+
+        public function withValidator($validator)
+        {
+            if ($validator->fails()) {
+                foreach ($validator->errors()->all() as $error) {
+                    Toastr::error($error);
+                }
+            }
+        }
+
+    Sau đó, trong Controller:
+        public function store(StoreUserRequest $request)
+        {
+            // ...
+        }
+
+----------------------------------
+Custom Rule: (Mới)
+    + Nếu bạn muốn áp dụng validation logic phức tạp hơn, bạn có thể tạo Custom Rule.
+    + Tạo Custom Rule:
+        + php artisan make:rule Uppercase
+        
+        + Trong Uppercase.php:
+            public function passes($attribute, $value)
+            {
+                return strtoupper($value) === $value;
+            }
+
+            public function message()
+            {
+                return 'The :attribute must be in uppercase.';
+            }
+
+        + Sử dụng Custom Rule:
+
+            use App\Rules\Uppercase;
+            $validatedData = $request->validate([
+                'name' => ['required', new Uppercase],
+            ]);
+
+            Hoặc sử dụng trong Form Request:
+            public function rules()
+            {
+                return [
+                    'name' => ['required', new Uppercase],
+                ];
+            }
+            Nhớ rằng, các Custom Rule cũng có thể nhận thêm các tham số để tùy chỉnh hành vi validation.
+                + Ví dụ, bạn có thể tạo một Custom Rule để kiểm tra xem một số có lớn hơn một số khác đã được truyền vào hay không:
+                    + Tạo Custom Rule:
+                        + php artisan make:rule GreaterThanAnotherField
+                        + Sau đó, trong GreaterThanAnotherField.php:
+                            use Illuminate\Contracts\Validation\Rule;
+
+                            class GreaterThanAnotherField implements Rule
+                            {
+                                protected $otherField;
+
+                                public function __construct($otherField)
+                                {
+                                    $this->otherField = $otherField;
+                                }
+
+                                public function passes($attribute, $value)
+                                {
+                                    return $value > $this->otherField;
+                                }
+
+                                public function message()
+                                {
+                                    return "The :attribute must be greater than {$this->otherField}.";
+                                }
+                            }
+
+                    + Sử dụng Custom Rule với tham số:
+                        use App\Rules\GreaterThanAnotherField;
+
+                        $otherFieldValue = 10; // Giá trị của trường khác
+                        $validatedData = $request->validate([
+                            'number' => ['required', new GreaterThanAnotherField($otherFieldValue)],
+                        ]);
+
+                    + Hoặc sử dụng trong Form Request:
+                        public function rules()
+                        {
+                            $otherFieldValue = 10; // Giá trị của trường khác
+                            return [
+                                'number' => ['required', new GreaterThanAnotherField($otherFieldValue)],
+                            ];
+                        }
+
+                => Như vậy, bạn có thể tùy chỉnh cách tham số được sử dụng trong Custom Rule để đáp ứng nhu cầu của từng tình huống validation.
+
+----------------------------------
+
+https://github.com/NguyenVanManh-AI/bap-bloglaravel
+
+------------------------------Caching------------------------------
+Caching     
+    + Caching (lưu trữ tạm thời) là một kỹ thuật quan trọng trong phát triển phần mềm để cải thiện hiệu suất ứng dụng bằng cách lưu trữ dữ liệu tính toán hoặc truy vấn cơ sở dữ liệu trong bộ nhớ tạm thời. Khi dữ liệu được lưu trữ tại vị trí này, ứng dụng có thể truy cập nhanh chóng và tránh việc phải tính toán lại hoặc truy vấn cơ sở dữ liệu liên tục.
+    + Laravel cung cấp nhiều cách để thực hiện caching trong ứng dụng của bạn.
+
+    1. Caching Dữ liệu:
+        Bạn có thể cache dữ liệu kết quả từ các truy vấn cơ sở dữ liệu hoặc từ bất kỳ nguồn dữ liệu nào khác. Laravel hỗ trợ cache bằng cách sử dụng Cache facade hoặc thông qua Dependency Injection.
+
+        // Sử dụng Cache facade
+        $value = Cache::get('key');
+        Cache::put('key', $value, $minutes);
+
+        // Sử dụng Dependency Injection
+        use Illuminate\Contracts\Cache\Repository as Cache;
+
+        public function __construct(Cache $cache)
+        {
+            $this->cache = $cache;
+        }
+
+        $value = $this->cache->get('key');
+        $this->cache->put('key', $value, $minutes);
+
+    2. Caching View:
+        Laravel cho phép bạn cache kết quả của view để tăng hiệu suất render view. Sử dụng lệnh Artisan để tạo view cache.
+        php artisan view:cache
+
+    3. Cache Route:
+        Laravel cung cấp tích hợp cho việc cache route. Bạn có thể cache route để giảm thời gian xử lý route.
+        Route::get('profile', function () {
+            //
+        })->middleware('cacheResponse:600'); // Cache for 10 minutes
+
+    4. Cache Fragment:
+        Caching fragment cho phép bạn cache một phần của view, chứ không phải toàn bộ view.
+        @cache('key')
+            <div>
+                <!-- Content to be cached -->
+            </div>
+        @endcache
+
+    5. Caching Query:
+        Laravel cho phép bạn cache kết quả của các truy vấn cơ sở dữ liệu.
+        $users = DB::table('users')->remember(10)->get(); // Cache for 10 minutes
+
+    6. Caching Configuration:
+        Bạn có thể cache configuration để tránh phải đọc file cấu hình mỗi lần ứng dụng khởi động.
+        php artisan config:cache
+        Tất cả các loại cache đều có thể được quản lý và xóa thông qua các lệnh Artisan hoặc thông qua tùy chọn cấu hình. Caching là một cách mạnh mẽ để cải thiện hiệu suất ứng dụng và giảm tải cho cơ sở dữ liệu.
+
+
+Ví dụ dễ hiểu về Caching : 
+    + Ví dụ để lấy dữ liệu của toàn bộ sản phẩm , ta cũng sẽ code vào controller như bình thường, nhưng có thể sử dụng thêm Caching với 
+    với mục đích là : Lưu dữ liệu lấy được , ví dụ lưu toàn bộ sản phẩm lấy được vào cache và thiết lập trong khoảng thời gian bao nhiêu đó . 
+    Nếu trong khoản thời gian này mà hệ thống gọi lại hàm getProducts() thì nó không cần query lại nữa mà lấy dữ liệu đã lưu từ trước 
+    đó trong cache . Hết thời gian quy định thì xóa cache đi và nếu như gọi getProducts() và nó kiểm tra trong cache không 
+    có biến lưu toàn bộ sản phẩm thì nó lại bắt đầu một query mới và thiết lập lại thời gian mới . (Cứ như thế lặp đi lặp lại)
+    Ví dụ : $products = Cache::remember('products', 60, function () { => thiết lập 60 phút 
+
+    + Lưu ý : 
+        + Việc lấy cache này có thể gặp vấn đề khi mà cache vẫn lưu giá trị cũ , trong khi trong database đã update cái mới 
+        + Ví dụ : Lấy toàn bộ sản phẩm lưu trong 60 phút . Trong 60 phút đó , giả sử có người update các sản phẩm rồi 
+        thì khi ta lấy ra mà vẫn lấy trong cache thì vẫn đang lấy cái cũ . 
+            => hướng giải quyết là khi update nói chung hay bất cứ hành động liên quan đến tất cả sản phẩm 
+            làm cho tất cả sản phẩm trong database thay đổi thì cần phải xóa biến cache lưu tất cả các sản phẩm đi 
+            và update lại biến cache mới lưu tất cả các sản phẩm có chứa các sản phẩm vừa mới update . 
+
+    1. Cache dữ liệu danh sách sản phẩm:
+        + Trong Controller của bạn, bạn có thể sử dụng Cache facade để lưu trữ danh sách sản phẩm từ cơ sở dữ liệu:
+        use Illuminate\Support\Facades\Cache;
+        use App\Models\Product;
+
+        public function getProducts()
+        {
+            $products = Cache::remember('products', 60, function () {
+                return Product::all();
+            });
+
+            return view('products.index', ['products' => $products]);
+        }
+
+    => Trong đoạn mã trên, danh sách sản phẩm sẽ được lưu trữ trong cache trong vòng 60 phút. Nếu bạn gọi hàm getProducts() trong khoảng thời gian 60 phút, dữ liệu sẽ được lấy từ cache mà không cần truy vấn lại cơ sở dữ liệu.
+    2. Xóa Cache khi dữ liệu thay đổi:
+        + Khi bạn thêm, sửa hoặc xóa sản phẩm, bạn nên xóa cache để đảm bảo rằng dữ liệu mới nhất sẽ được hiển thị. Bạn có thể sử dụng hàm forget để xóa cache:
+        + Cache::forget('products');
+        => Đặt hàm này trong các hành động tạo, sửa hoặc xóa sản phẩm.
+
+    3. Sử dụng tên cache phân cấp:
+        + Nếu bạn muốn xử lý cache phân cấp theo từng danh mục hoặc trang, bạn có thể sử dụng tên cache phân cấp:
+            $category = 'electronics'; // thiết bị điện tử 
+            $cacheKey = "products.$category";
+
+            $products = Cache::remember($cacheKey, 60, function () use ($category) {
+                return Product::where('category', $category)->get();
+            });
+
+        => Trong ví dụ này, dữ liệu danh sách sản phẩm của danh mục "electronics" sẽ được lưu trữ riêng biệt với tên cache phân cấp "products.electronics".
+        => Caching là một công cụ mạnh mẽ để cải thiện hiệu suất ứng dụng và giảm tải cho cơ sở dữ liệu. 
+        Tuy nhiên, hãy cẩn thận khi sử dụng caching để đảm bảo rằng dữ liệu luôn được cập nhật đúng và không gây ra sự cố không mong muốn.
+
+------------------------------Schedule Job và Queue------------------------------
+
+Schedule job (lên lịch công việc) và queue (hàng đợi)
+
+=> Schedule Job và Queue là hai khái niệm quan trọng trong Laravel liên quan đến quản lý các tác vụ chạy dưới nền hoặc theo lịch trình. 
+Dưới đây là sự khác nhau giữa chúng:
+
++ Schedule Job:
+Schedule Job trong Laravel được sử dụng để thực hiện các tác vụ định kỳ theo lịch trình đã xác định.
+Để định nghĩa và cấu hình Schedule Job, bạn sử dụng class Kernel (thường là file app/Console/Kernel.php) để xác định các tác vụ cần chạy định kỳ. Bạn có thể sử dụng các phương thức như daily(), hourly(), everyMinute(),... để lên lịch thực hiện các tác vụ.
+Schedule Job thường được sử dụng cho các tác vụ cần thực hiện định kỳ theo lịch như gửi email hàng ngày, làm sạch dữ liệu, cập nhật thông tin và nhiều tác vụ khác.
+
++ Queue:
+Queue trong Laravel là hệ thống cho phép bạn xử lý các tác vụ nền mà không cần chờ đợi chúng hoàn thành trước khi tiếp tục xử lý.
+Các tác vụ trong Queue được xử lý bởi các workers, tức là các tiến trình chạy độc lập với ứng dụng chính. Điều này giúp tách biệt quá trình xử lý tác vụ nền và tạo ra trải nghiệm ứng dụng tốt hơn cho người dùng.
+Queue thường được sử dụng cho các tác vụ mất nhiều thời gian xử lý như gửi email hàng loạt, xử lý tác vụ tải nặng, tính toán phức tạp, v.v.
+Tóm lại, Schedule Job dùng để thực hiện các tác vụ định kỳ theo lịch, trong khi Queue dùng để xử lý các tác vụ nền một cách bất đồng bộ và không ảnh hưởng đến việc xử lý của ứng dụng chính.
+
+------------------------------Schedule Job và Queue------------------------------
+
++ Schedule Job : Lên lịch công việc (hàng ngày, giây, phút, giờ, tuần,...)
++ Queue : Hàng đợi (không phải là bất đồng bộ như bên JS mà bên PHP sẽ là thực hiện đồng bộ từ trên xuống
+    => chính vì thế tác vụ nào lâu nên cho vào hàng đợi)
+
++ Ví dụ sử dụng Schedule Job để gửi mail hàng ngày : 
+
+    + Cách 1 : Dùng Jobs : 
+        + Để thực hiện việc gửi email hàng ngày cho tất cả các địa chỉ email trong bảng "users", bạn có thể sử dụng Laravel's Schedule và Mail. 
+        Dưới đây là ví dụ cụ thể về cách làm điều này:
+
+        + Tạo một Job để Gửi Email:
+            + Đầu tiên, bạn cần tạo một job để thực hiện việc gửi email. Hãy tạo một job bằng câu lệnh sau:
+            + php artisan make:job SendDailyEmail
+
+            + Sau đó, mở file app/Jobs/SendDailyEmail.php và định nghĩa logic gửi email trong hàm handle():
+                use App\Models\User;
+                use Illuminate\Bus\Queueable;
+                use Illuminate\Contracts\Queue\ShouldQueue;
+                use Illuminate\Foundation\Bus\Dispatchable;
+                use Illuminate\Queue\InteractsWithQueue;
+                use Illuminate\Queue\SerializesModels;
+                use Illuminate\Support\Facades\Mail;
+                use App\Mail\DailyEmail;
+
+                class SendDailyEmail implements ShouldQueue
+                {
+                    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+                    public function handle()
+                    {
+                        $users = User::all();
+
+                        foreach ($users as $user) {
+                            Mail::to($user->email)->send(new DailyEmail($user));
+                        }
+                    }
+                }
+
+            + Tạo Mailable:
+                + Bạn cần tạo một Mailable để định dạng nội dung email. Hãy tạo một Mailable bằng câu lệnh sau:
+                + php artisan make:mail DailyEmail
+                + Sau đó, trong file app/Mail/DailyEmail.php, bạn có thể định nghĩa nội dung email:
+                    use App\Models\User;
+                    use Illuminate\Bus\Queueable;
+                    use Illuminate\Contracts\Queue\ShouldQueue;
+                    use Illuminate\Mail\Mailable;
+                    use Illuminate\Queue\SerializesModels;
+
+                    class DailyEmail extends Mailable
+                    {
+                        use Queueable, SerializesModels;
+
+                        public $user;
+
+                        public function __construct(User $user)
+                        {
+                            $this->user = $user;
+                        }
+
+                        public function build()
+                        {
+                            return $this->markdown('emails.daily', ['user' => $this->user]);
+                        }
+                    }
+
+            + Định lịch gửi email hàng ngày:
+                + Mở file app/Console/Kernel.php và thêm đoạn code trong phương thức schedule():
+                    use App\Jobs\SendDailyEmail;
+
+                    protected function schedule(Schedule $schedule)
+                    {
+                        $schedule->job(new SendDailyEmail)->daily();
+                    }
+            + Tạo View cho Email:
+                + Trong thư mục resources/views/emails, tạo một file daily.blade.php để định dạng email.
+            
+            + Cuối cùng, chạy các lệnh sau:
+                php artisan queue:work   (mỗi lệnh chạy một terminal)
+                php artisan schedule:run (mỗi lệnh chạy một terminal)
+
+            + Laravel sẽ tự động gửi email hàng ngày cho tất cả các địa chỉ email trong bảng "users".
+
+        
+        + Thiết lập ngày và giờ khác : 
+            + Mở file app/Console/Kernel.php và thay thế phương thức daily() bằng dailyAt('08:00'):
+                use App\Jobs\SendDailyEmail;
+
+                protected function schedule(Schedule $schedule)
+                {
+                    $schedule->job(new SendDailyEmail)->dailyAt('08:00');
+                }
+
+        
+            + Mỗi phút : $schedule->job(new SendDailyEmail)->everyMinute();
+            + Mỗi giây : $schedule->job(new SendDailyEmail)->everySecond();
+            + Mỗi giờ  : $schedule->job(new SendDailyEmail)->hourly();
+            + Mỗi tuần (vào thứ 2 lúc 8h) : $schedule->job(new SendDailyEmail)->weeklyOn(1, '8:00');
+            + Mỗi tháng (ngày 1 lúc 8h) : $schedule->job(new SendDailyEmail)->monthlyOn(1, '8:00');
+            + Mỗi năm (ngày 1 tháng 1 lúc 8h) : $schedule->job(new SendDailyEmail)->yearlyOn(1, 1, '8:00');
+
+        + Nhớ rằng, để kích hoạt các lịch trình này, bạn cần chạy lệnh php artisan schedule:run.
+
+        + Tham khảo thêm về Schedule Command : https://therealprogrammer.com/laravel-8-cron-job-task-scheduling-tutorial/ 
+        + Nhập lệnh : php artisan => có thể xem toàn bộ thông tin của project trong đó có cả những schedule và queue 
+
+    + Cách 2 : Dùng Command : 
+        + php artisan make:command SendMail
+        + bloglaravel\app\Console\Commands\SendMail.php : 
+            <?php
+
+                namespace App\Console\Commands;
+
+                use App\Models\User;
+                use Illuminate\Console\Command;
+                use Illuminate\Support\Facades\Mail;
+                use App\Mail\DailyEmail;
+
+                class SendMail extends Command
+                {
+                    // protected $signature = 'command:name';   
+                    protected $signature = 'users:sendmail';    <= Đây là lệnh command 
+
+                    protected $description = 'Send mail to all users by running this command';
+
+                    public function __construct()
+                    {
+                        parent::__construct();
+                    }
+
+                    public function handle()
+                    {
+                        $users = User::all();
+                        foreach ($users as $user) {
+                            Mail::to($user->email)->send(new DailyEmail($user));
+                        }
+                        // return 0;
+                    }
+                }
+
+        + Sau đó ta nhập : php artisan => sẽ thấy lệnh 'users:sendmail' cùng dòng mô tả 'Send mail to all users by running this command'
+        + bloglaravel\app\Console\Kernel.php
+            <?php
+
+            namespace App\Console;
+            
+            use Illuminate\Console\Scheduling\Schedule;
+            use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+            use App\Jobs\SendDailyEmail;
+            
+            class Kernel extends ConsoleKernel
+            {
+                protected $commands = [
+                    Commands\SendMail::class,
+                ];
+            
+                protected function schedule(Schedule $schedule)
+                {
+                    $schedule->command('users:sendmail')->everyMinute(); // thực hiện lệnh command 
+                    // $schedule->command('users:sendmail')->cron('* * * * *'); // thực hiện lệnh command 
+                    // $schedule->command('users:sendmail')->hourly(); // thực hiện lệnh command 
+                    // $schedule->command('minute:update')->hourly();
+                    // $schedule->job(new SendDailyEmail)->daily();
+                    // $schedule->job(new SendDailyEmail)->everyMinute(); // Mỗi phút  
+                    // $schedule->job(new SendDailyEmail)->everySecond(); // Mỗi giây 
+                    // $schedule->job(new SendDailyEmail)->hourly(); // Mỗi giờ 
+                    // $schedule->job(new SendDailyEmail)->weeklyOn(1, '8:00'); // Mỗi tuần (vào thứ 2 lúc 8h) 
+                    // $schedule->job(new SendDailyEmail)->monthlyOn(1, '8:00'); // Mỗi tháng (ngày 1 lúc 8h) 
+                    // $schedule->job(new SendDailyEmail)->yearlyOn(1, 1, '8:00'); // Mỗi năm (ngày 1 tháng 1 lúc 8h) 
+                }
+            
+                protected function commands()
+                {
+                    $this->load(__DIR__.'/Commands');
+            
+                    require base_path('routes/console.php');
+                }
+            }
+        
+        + Chạy lệnh : php artisan users:sendmail để thử nghiệm xem chạy ok chưa 
+        + Chạy lệnh : php artisan schedule:run
+
++ Ví dụ sử dụng Queue để cho vào hàng đợi, lấy ví dụ thực tế trong việc gửi mail cho nhiều người : 
+    + Để thực hiện việc gửi email đến tất cả các địa chỉ email trong bảng người dùng (table users) bằng cách sử dụng Queue, 
+    bạn có thể sử dụng một thư viện hỗ trợ hàng đợi như Laravel Queue. Dưới đây là một ví dụ về cách bạn có thể viết mã trong Laravel:
+    + Trước hết, hãy tạo một job để xử lý việc gửi email. Trong thư mục app/Jobs, bạn có thể tạo một tệp tin mới với tên là SendEmailJob.php:
+    + php artisan make:job SendEmailJob
+    + Sau đó, trong tệp tin app/Jobs/SendEmailJob.php, bạn có thể thêm logic để gửi email:
+        namespace App\Jobs;
+
+        use Illuminate\Bus\Queueable;
+        use Illuminate\Contracts\Queue\ShouldQueue;
+        use Illuminate\Foundation\Bus\Dispatchable;
+        use Illuminate\Queue\InteractsWithQueue;
+        use Illuminate\Queue\SerializesModels;
+        use Illuminate\Support\Facades\Mail;
+        use App\Mail\YourMail; // Thay YourMail bằng mẫu thư bạn muốn gửi
+
+        class SendEmailJob implements ShouldQueue
+        {
+            use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+            protected $email;
+
+            public function __construct($email)
+            {
+                $this->email = $email;
+            }
+
+            public function handle()
+            {
+                Mail::to($this->email)->send(new YourMail()); // Thay YourMail bằng mẫu thư bạn muốn gửi
+            }
+        }
+    
+    + Tiếp theo, trong hàm sendAll() của ControllerUser, bạn có thể lặp qua tất cả các địa chỉ email trong bảng người dùng và đưa chúng vào hàng đợi gửi email:
+        use App\Jobs\SendEmailJob;
+        use App\Models\User;
+
+        class ControllerUser extends Controller
+        {
+            public function sendAll()
+            {
+                $users = User::all();
+
+                foreach ($users as $user) {
+                    dispatch(new SendEmailJob($user->email));
+                }
+
+                return "Emails are being sent in the background.";
+            }
+        }
+
+    + Cuối cùng, đảm bảo rằng bạn đã cấu hình hàng đợi trong tệp .env của bạn và chạy tác vụ hàng đợi bằng cách chạy lệnh sau:
+    + php artisan queue:work
+    => Như vậy, mỗi địa chỉ email sẽ được đưa vào hàng đợi gửi email và được xử lý một cách song song trong hàng đợi.
+
+
+    
++ Để cấu hình hàng đợi trong Laravel, bạn cần chỉnh sửa tệp .env của dự án của mình. Dưới đây là một số cài đặt liên quan đến hàng đợi mà bạn cần thay đổi trong tệp .env:
+    + Cấu hình driver hàng đợi: Bạn cần xác định driver hàng đợi bạn muốn sử dụng. Laravel hỗ trợ nhiều driver như sync (đồng bộ), database, redis, beanstalkd, sqs (Amazon Simple Queue Service) và nhiều cái khác. Ví dụ, để sử dụng driver database, bạn có thể thêm dòng sau vào tệp .env:
+
+        QUEUE_CONNECTION=database
+        Kết nối cho driver hàng đợi: Nếu bạn chọn sử dụng driver database, bạn cần chỉ định kết nối cơ sở dữ liệu mà bạn muốn sử dụng cho hàng đợi. Ví dụ:
+        DB_CONNECTION=mysql
+        DB_QUEUE_TABLE=jobs
+        Cấu hình Redis (nếu sử dụng Redis): Nếu bạn chọn sử dụng driver redis, bạn cần cung cấp thông tin kết nối đến máy chủ Redis:
+        
+        REDIS_HOST=127.0.0.1
+        REDIS_PASSWORD=null
+        REDIS_PORT=6379
+        Chạy tác vụ hàng đợi: Cuối cùng, bạn cần chạy tác vụ hàng đợi để xử lý các công việc trong hàng đợi. Sử dụng lệnh sau:
+        
+        php artisan queue:work
+        Ví dụ, nếu bạn đã cấu hình driver là database, bạn sẽ thấy các công việc hàng đợi được lưu trong bảng jobs của cơ sở dữ liệu và tác vụ hàng đợi (php artisan queue:work) sẽ lấy các công việc này và xử lý chúng một cách song song.
+        
+        Lưu ý rằng cấu hình hàng đợi có thể thay đổi tùy theo yêu cầu và môi trường của dự án của bạn. Hãy xem tài liệu chính thức của Laravel để biết thêm thông tin về cấu hình hàng đợi: https://laravel.com/docs/8.x/queues
+
+------------------------------Relationships------------------------------
+php artisan make:migration create_users_table
+php artisan make:migration create_comments_table
+php artisan make:migration create_admins_table
+php artisan make:migration create_articles_table
+php artisan make:migration create_categories_table (số nhiều)
+php artisan make:migration create_products_table
+
+
+
+------------------------------Static------------------------------
+
+<?php
+
+namespace App\Repositories;
+
+use App\Models\Example;
+use App\Models\PasswordReset;
+
+/**
+ * Class ExampleRepository.
+ */
+class PasswordResetRepository extends BaseRepository implements PasswordResetInterface
+{
+    public function getModel()
+    {
+        return PasswordReset::class;
+    }
+
+    public static function findPasswordReset($email){
+        return (new self())->model
+        ->when($email, fn ($q) => $q->where('email', '=', $email))
+        ->first();
+    }
+
+    public static function updateToken($user, $token){
+        $user = (new self())->model->find($user->id);
+        $updateData = [
+            'token' => $token,
+        ];
+        $user->update($updateData);
+    }
+
+}
+
+=> Không khai báo thêm service mà từ UserService gọi đến PasswordResetRepository thì phải dùng phương thức static ' :: '
+    => $user = PasswordResetRepository::findPasswordReset($email);
+=> Các hàm đều phải thêm static 
+=> Dẫn đến các hàm trong PasswordResetRepository mà được gọi thì không được dùng $this như : 
+    public static function findPasswordReset($email){
+        return $this->model
+        ->when($email, fn ($q) => $q->where('email', '=', $email))
+        ->first();
+    }
+Mà phải là : 
+    public static function findPasswordReset($email){
+        return (new self())->model
+        ->when($email, fn ($q) => $q->where('email', '=', $email))
+        ->first();
+    }
+
+
+C:\laragon\www\intern-php\app\Services\UserService.php : 
+    public function forgotSend($email){
+        $token = Str::random(32);
+        $user = PasswordResetRepository::findPasswordReset($email);
+        if($user) PasswordResetRepository::updateToken($user, $token); 
+        ...
+    }
+
+C:\laragon\www\intern-php\app\Repositories\PasswordResetInterface.php
+    <?php
+
+    namespace App\Repositories;
+
+    interface PasswordResetInterface extends RepositoryInterface
+    {
+        public static function findPasswordReset($email);
+        public static function updateToken($user, $token);
+    }
+
+C:\laragon\www\intern-php\app\Repositories\PasswordResetRepository.php
+    <?php
+
+    namespace App\Repositories;
+
+    use App\Models\Example;
+    use App\Models\PasswordReset;
+
+    class PasswordResetRepository extends BaseRepository implements PasswordResetInterface
+    {
+        public function getModel()
+        {
+            return PasswordReset::class;
+        }
+
+        public static function findPasswordReset($email){
+            return (new self())->model
+            ->when($email, fn ($q) => $q->where('email', '=', $email))
+            ->first();
+        }
+
+        public static function updateToken($user, $token){
+            $user = (new self())->model->find($user->id);
+            $updateData = [
+                'token' => $token,
+            ];
+            $user->update($updateData);
+        }
+
+    }
+
+
+------------------------------Save file------------------------------
+public function saveAvatar(object $filter){
+    if ($filter->image) {
+        $image = $filter->image;
+        $filename =  pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $image->getClientOriginalExtension();
+        $image->storeAs(UserEnum::PATH_FILE, $filename);
+        return UserEnum::PATH_FILE . $filename;
+    }
+}
+
+=> Nếu dùng StoreAs thì đặt lại tên 
+=> Nếu dùng Store thì nó tự đặt tên file cho mình
+
+------------------------------Save file------------------------------
+C:\laragon\www\intern-php\app\Providers\RepositoryServiceProvider.php : 
+        <?php
+
+        namespace App\Providers;
+
+        use App\Repositories\ExampleInterface;
+        use App\Repositories\ExampleRepository;
+        use App\Repositories\UserInterface;
+        use App\Repositories\UserRepository;
+        use App\Repositories\ArticleInterface;
+        use App\Repositories\ArticleRepository;
+        use App\Repositories\CommentInterface;
+        use App\Repositories\CommentRepository;
+        use Illuminate\Support\ServiceProvider;
+
+        class RepositoryServiceProvider extends ServiceProvider
+        {
+            /**
+            * Register services.
+            *
+            * @return void
+            */
+            public function register()
+            {
+                $this->app->bind(ExampleInterface::class, ExampleRepository::class);
+                $this->app->bind(UserInterface::class, UserRepository::class);
+                $this->app->bind(ArticleInterface::class, ArticleRepository::class);
+                $this->app->bind(CommentInterface::class, CommentRepository::class);
+                $this->app->bind(PasswordResetInterface::class, PasswordResetRepository::class);
+            }
+
+            /**
+            * Bootstrap services.
+            *
+            * @return void
+            */
+            public function boot()
+            {
+                //
+            }
+        }
+
+
+C:\laragon\www\intern-php\config\app.php
+    Khai báo : Tên App\Providers\RepositoryServiceProvider::class,
+
+
+------------------------------Database Transactions------------------------------
++ https://laravel.com/docs/10.x/database#database-transactions
+=> Khi mà đoạn code chứa truy vấn nhiều bản dữ liệu 
+=> Bọc ngoài bằng transaction
+
+    use Illuminate\Support\Facades\DB;
+    
+    DB::transaction(function () {
+        DB::update('update users set votes = 1');
+    
+        DB::delete('delete from posts');
+    });
+
+
+------------------------------Trong một Repository dùng một Repository khác------------------------------
+
+    $repo = resolve(BlogRepository::class); // resolve vào file Repository hiện tại 
+    $repo->method ...
+
+------------------------------------------------------------
+
+public function userLogin(RequestLogin $request)
+{
+    $request->validate([
+        'g-recaptcha-response' => ['required', new ReCaptcha]
+    ]);
+    $filter = (object) [
+        'email' => $request->email ?? '',
+        'password' => $request->password ?? '',
+    ];
+    return $this->userService->userLogin($filter);
+}
+
+=> ReCaptcha để ở ngay Controller thì lại được mà bỏ vào RequestLogin thì có tick vào capcha rồi hay không 
+thì nó đều báo là chưa được . 
+
+-----------------------------Tự động tăng trong migrate-------------------------------
+Trong migrate 
+    mà : $table->integer('id');
+        => id  không tự động tăng 
+    còn : $table->id(); mới tự động tăng 
+
+------------------------------------------------------------
+Trong Laravel, bạn có thể thực hiện việc sửa cột id của một bảng từ $table->integer('id'); thành $table->id(); bằng cách sử dụng một câu lệnh artisan để tạo một migration và sau đó chạy migration này. Dưới đây là cách bạn có thể thực hiện điều này:
+
+Bước 1: Tạo migration mới
+Mở terminal và chạy lệnh sau để tạo một migration mới:
+
+bash
+Copy code
+php artisan make:migration update_id_column_in_table_name
+Trong đó update_id_column_in_table_name là tên của migration. Đảm bảo bạn thay thế table_name bằng tên thực sự của bảng mà bạn muốn thay đổi.
+
+Bước 2: Sửa nội dung của migration
+Mở tệp migration vừa tạo trong thư mục database/migrations và tìm dòng tạo cột id. Thay thế nó bằng $table->id();. Ví dụ:
+
+php
+Copy code
+// database/migrations/xxxx_xx_xx_xxxxxx_update_id_column_in_table_name.php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class UpdateIdColumnInTableName extends Migration
+{
+    public function up()
+    {
+        Schema::table('table_name', function (Blueprint $table) {
+            // Thay thế dòng dưới đây
+            // $table->integer('id');
+            // Bằng dòng sau đây
+            $table->id();
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('table_name', function (Blueprint $table) {
+            // Đảm bảo bạn cung cấp logic để rollback thay đổi nếu cần
+            // Ví dụ: $table->dropColumn('id');
+        });
+    }
+}
+Bước 3: Chạy migration
+Sau khi bạn đã sửa migration, hãy chạy lệnh sau để áp dụng thay đổi vào cơ sở dữ liệu:
+
+bash
+Copy code
+php artisan migrate
+Lệnh trên sẽ chạy tất cả các migration chưa được chạy trước đó và áp dụng thay đổi cấu trúc cơ sở dữ liệu của bạn.
+
+Lưu ý rằng khi thay đổi cấu trúc của cột id, dữ liệu trong cột này không bị mất đi, vì chỉ là thay đổi cách cột được định nghĩa trong cơ sở dữ liệu.
+------------------------------------------------------------
+
+php artisan migrate:rollback --path=database/migrations/2023_08_24_095302_update_id_column_in_password_resets.php
+
+------------------------------------------------------------
+
+Mở copy cho một trang web => css : user-select: auto;
+
+-----------------------------Task-----------------------------
++ delete comment code css, js 
++ fix code convension css, js 
++ chuyển các style inline trong blade vào file css 
+
++ Queue Mail (forgot password, send mail welcome) (Tìm hiểu Redis Queue)
++ Thay đổi kiểu dữ liệu của một cột bằng migrate mà không reset lại dữ liệu (thêm cột thì ok rồi)
++ Ngoài liên kết 1-1 , 1-n , n-n thì laravel còn mấy loại liên kết nữa , đọc cho kĩ 
++ Bọc các đoạn lệnh logic bằng try catch , các đoạn lệnh query bằng transaction 
++ Xây dựng API (ảnh của các product thì dùng cột có dữ liệu là JSOn, không tách ra bảng riêng) 
+
+https://laravel.com/docs/10.x/database#database-transactions
+https://bap.udemy.com/course/php-with-laravel-for-beginners-become-a-master-in-laravel/learn/lecture/4978474#learning-tools
+https://towardsdatascience.com/create-your-first-cronjob-on-the-linux-server-74e2fdc76e78#:~:text=Cron%20is%20a%20system%20that,%2C%20daily%2C%20monthly%2C%20etc.
+https://www.freecodecamp.org/news/cron-jobs-in-linux/
+https://techsolutionstuff.com/post/how-to-send-bulk-mail-using-queue-in-laravel-8
+https://techsolutionstuff.com/post/laravel-9-send-bulk-mail-using-queue
+https://impulsivecode.com/change-column-type-using-laravel-migration/#Step_6_Change_the_Column_Type
+https://laravel.com/docs/10.x/eloquent-relationships 
+
+------------------------------------------------------------
+php artisan migrate : Chạy phần up() của một file
+php artisan migrate:rollback : Chạy phần down() của một file
+
+*Note : Muốn thay đổi gì mà không ảnh hưởng đến data trong database đều phải tạo thêm file mới 
+    => Code sự thay đổi trên các file đó và chạy file đó . 
+-----------------------------Thay đổi một cột từ id thường sang id tự động tăng-----------------------------
+Thay đổi một cột từ 
+    Mục đích : 
+        id thường : $table->integer('id');
+        sang id tự động tăng : $table->id();
+
+    Cách làm : 
+        => Xóa cột đó đi sau đó tạo lại cột mới 
+
+    Thực hiện : 
+
+    > php artisan make:migration remove_id_from_password_resets --table=password_resets (Tạo file migrate mới)
+
+    Code vào file : 
+        <?php
+            use Illuminate\Database\Migrations\Migration;
+            use Illuminate\Database\Schema\Blueprint;
+            use Illuminate\Support\Facades\Schema;
+
+            return new class extends Migration
+            {
+                public function up()
+                {
+                    Schema::table('password_resets', function (Blueprint $table) {
+                        $table->dropColumn('id');
+                    });
+                }
+
+                public function down()
+                {
+                    Schema::table('password_resets', function (Blueprint $table) {
+                        $table->id();
+                    });
+                }
+            };
+
+    > php artisan migrate --path=/database/migrations/2023_08_25_015429_remove_id_from_password_resets.php
+        => Lệnh migrate bình thường sẽ chạy hàm up() trong một file 
+        => Phải chạy riêng file này, không nên chạy php artisan migrate
+        => Xóa cột này 
+
+    > php artisan migrate:rollback --path=/database/migrations/2023_08_25_015429_remove_id_from_password_resets.php
+        => Lệnh migrate:rollback sẽ chạy hàm down() trong một file 
+        => Chạy riêng file này, không được chạy migrate:rollback
+
+    *Nói thêm : php artisan make:migration remove_id_from_password_resets --table=password_resets
+        => Các phần còn lại đều quan trọng , riêng remove_id_from_password_resets thì cũng chỉ là cái tên . 
+
+-------------------------------Đổi kiểu dữ liệu của một cột-------------------------------
+Đổi kiểu dữ liệu của một cột . 
+    Ex : Chuyển cột email của bảng password_resets từ string sang int 
+        + Cài package 
+            "doctrine/dbal": "^3.6",
+        
+        + php artisan make:migration change_email_type_in_password_resets_table --table=password_resets
+        + Code vào file : 
+            <?php
+                use Illuminate\Database\Migrations\Migration;
+                use Illuminate\Database\Schema\Blueprint;
+                use Illuminate\Support\Facades\Schema;
+                
+                return new class extends Migration
+                {
+                    public function up()
+                    {
+                        Schema::table('password_resets', function (Blueprint $table) {
+                            $table->integer('email')->change();
+                        });
+                    }
+                
+                    public function down()
+                    {
+                        Schema::table('password_resets', function (Blueprint $table) {
+                            $table->string('email')->change();
+                        });
+                    }
+                };
+
+        + Chạy lệnh : 
+            > php artisan migrate --path=/database/migrations/2023_08_25_031041_change_email_type_in_password_resets_table.php
+
+        + Giả sử sau khi thay đổi sang int mà muốn về lại kiểu string hay text thì cứ sửa vào down() sau đó chạy lệnh rollback thôi 
+            > php artisan migrate:rollback --path=/database/migrations/2023_08_25_031041_change_email_type_in_password_resets_table.php
+          
+-------------------------------Các khác , thay đổi một bảng mà không làm ảnh hưởng đến data của các bảng khác-------------------------------
+Hay     
+    + Chỉ reset lại dữ liệu của bảng đang chỉnh sửa 
+    + Không ảnh hưởng đến data của các bảng khác 
+    + Không cần tạo mới file 
+
+    + Giả sử bảng password_resets cần chỉnh sửa 
+        => Chạy lệnh : php artisan migrate:refresh --path=/database/migrations/2014_10_12_100000_create_password_resets_table.php
+        => Nó sẽ chạy rollback (down) sau đó migrate (up) lại 
+
+
+----------------------------------Sử dụng Queue cho Send Mail Reset Password ----------------------------------
+Sử dụng Queue cho Send Mail Reset Password : 
+
+    + Đặt vấn đề : Bình thường ta code như này 
+        + UserService.php : (Hàm xử lí gửi mail)
+            public function forgotSend($email)
+            {
+                $token = Str::random(32);
+                $user = PasswordResetRepository::findPasswordReset($email);
+                if ($user) {
+                    PasswordResetRepository::updateToken($user, $token);
+                } else {
+                    PasswordResetRepository::createToken($email, $token);
+                }
+                Toastr::success('Send Mail Password Reset Success !');
+                $url = 'http://localhost:8000/forgot-form?token=' . $token;
+                Mail::to($email)->send(new ForgotPassword($url));     <== (hành động gửi mail)
+
+                return redirect()->back();
+            }
+
+    + Ta muốn cho hành động gửi mail này vào hàng đợi . 
+        => Ví dụ serve của ta chỉ có một cái , mà nhiều người truy cập từ nhiều client 
+        trên nhiều máy tính khác nhau => cùng forgot password 
+        => tải không kịp => lâu => đưa hành động gửi mail này vào hàng đợi . 
+        => người này gửi xong rồi mới đến người khác 
+        => đoạn code phía sau của hành động gửi mail của tất cả mọi người đều hoạt động bình thường 
+        như là không có hành động gửi mail vậy , vì hành động này đã được đưa vào hàng đợi Queue . 
+
+    + Cách làm : 
+        + Tạo file jobs : 
+            > php artisan make:job SendForgotPasswordEmail
+            + Code vào đó : 
+                <?php
+
+                    namespace App\Jobs;
+                    
+                    use Illuminate\Bus\Queueable;
+                    use Illuminate\Contracts\Queue\ShouldBeUnique;
+                    use Illuminate\Contracts\Queue\ShouldQueue;
+                    use Illuminate\Foundation\Bus\Dispatchable;
+                    use Illuminate\Queue\InteractsWithQueue;
+                    use Illuminate\Queue\SerializesModels;
+                    use App\Mail\ForgotPassword;
+                    use Illuminate\Support\Facades\Mail;
+                    use Illuminate\Support\Facades\Log;
+                    
+                    class SendForgotPasswordEmail implements ShouldQueue
+                    {
+                        use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+                    
+                        public $email;
+                        public $url;
+                        
+                        public function __construct($email, $url)
+                        {
+                            $this->email = $email;
+                            $this->url = $url;
+                        }
+                        
+                        public function handle()
+                        {
+                            $email = $this->email;
+                            $url = $this->url;
+                        
+                            // Các bước xử lý logic liên quan đến email và token
+                            Mail::to($email)->send(new ForgotPassword($url));
+                            info("Email sent to $email with URL: $url");
+                            Log::info("Email sent to $email with URL: $url");
+                    
+                        }
+                    }
+            
+            + Giải thích : Ghi vào lịch sử làm việc của queue vào file intern-php\storage\logs\laravel.log
+                + info("Email sent to $email with URL: $url");
+                + Log::info("Email sent to $email with URL: $url");
+
+                => Hai dòng lệnh này là như nhau , ta có thể gọi info() luôn cũng được 
+                mà có thể use thêm Log cũng được . 
+                Các dòng log này sẽ được ghi vào file laravel.log
+                => Ta xóa hết tất cả lịch sử trong file này , sau đó thực hiện forgot password 
+                    thì sẽ thấy nó ghi thêm mấy dòng này . (có thể chia màn hình làm hai để thấy nó ghi thêm trực tiếp cho trực quan)
+
+
+    + Sau đó sửa lại hàm forgotSend()
+        public function forgotSend($email)
+        {
+            $token = Str::random(32);
+            $user = PasswordResetRepository::findPasswordReset($email);
+            if ($user) {
+                PasswordResetRepository::updateToken($user, $token);
+            } else {
+                PasswordResetRepository::createToken($email, $token);
+            }
+            Toastr::success('Send Mail Password Reset Success !');
+            $url = 'http://localhost:8000/forgot-form?token=' . $token;
+            // Mail::to($email)->send(new ForgotPassword($url)); <= thay dòng này 
+            SendForgotPasswordEmail::dispatch($email, $url);  <= bằng dòng này 
+
+            return redirect()->back();
+        }
+
+    + Chạy lệnh để thực hiện hàng đợi : 
+        > php artisan queue:work
+        => Lệnh này sẽ chạy liên tục như lệnh 'php artisan serve' 
+        => Để liên tục lắng nghe nếu có hàng đợi thì nó thực hiện . 
+
+------------------------------------------------------------
+Chú ý phải phân biệt rõ : 
+    + Schedule (Lập lịch) : 
+        + Đi với command 
+        + php artisan schedule:run => chạy toàn bộ lệnh được đăng kí trong Kernel.php  
+        + php artisan users:sendmail => chỉ chạy file tương ứng với lệnh được đăng kí 'users:sendmail'
+
+    + Queue (Hàng đợi) : 
+        + Đi với Jobs 
+        + php artisan queue:work
+
+------------------------------------------------------------
+php artisan serve --host=192.168.11.159
+=> mobile cũng truy cập vào được . 
+------------------------------------------------------------
+https://laravel.com/docs/9.x/eloquent-mutators
+
+
+-------------------------------Drive Queue-------------------------------
+    + Drive queue mặc định của laravel là sync
+        => Nó chỉ phù hợp khi code , còn khi ra sản phẩm rồi => nhiều người dùng 
+        => dùng drive khác => nhanh hơn 
+        
+    + Một số drive khác : database, redis, beanstalkd, và sqs
+
+    + intern-php\config\queue.php
+        'connections' => [
+
+            'sync' => [
+                'driver' => 'sync',
+            ],
+
+            'database' => [
+                'driver' => 'database',
+                'table' => 'jobs',
+                'queue' => 'default',
+                'retry_after' => 90,
+                'after_commit' => false,
+            ],
+
+            'beanstalkd' => [
+                'driver' => 'beanstalkd',
+                'host' => 'localhost',
+                'queue' => 'default',
+                'retry_after' => 90,
+                'block_for' => 0,
+                'after_commit' => false,
+            ],
+
+            'sqs' => [
+                'driver' => 'sqs',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'prefix' => env('SQS_PREFIX', 'https://sqs.us-east-1.amazonaws.com/your-account-id'),
+                'queue' => env('SQS_QUEUE', 'default'),
+                'suffix' => env('SQS_SUFFIX'),
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+                'after_commit' => false,
+            ],
+
+            'redis' => [
+                'driver' => 'redis',
+                'connection' => 'default',
+                'queue' => env('REDIS_QUEUE', 'default'),
+                'retry_after' => 90,
+                'block_for' => null,
+                'after_commit' => false,
+            ],
+
+        ],
+    
+    => chỉ có sync là dùng ngay luôn 
+    => còn lại muốn dùng thì phải cấu hình 
+
+-------------------------------Queue use drive Database-------------------------------
+
+Cách làm : 
+    > php artisan queue:table 
+        => để tạo migrations cho bảng jobs
+
+    > php artisan migrate --path=/database/migrations/2023_08_25_063317_create_jobs_table.php
+        => tạo ra bảng jobs ở database 
+
+    .env 
+        Trong file env sữa lại thành 
+        # QUEUE_CONNECTION=sync 
+        QUEUE_CONNECTION=database
+
+
+    + intern-php\app\Services\UserService.php : 
+
+        use Illuminate\Support\Facades\Log;
+        use Illuminate\Support\Facades\Queue;
+        public function forgotSend($email)
+        {
+            $token = Str::random(32);
+            $user = PasswordResetRepository::findPasswordReset($email);
+            if ($user) {
+                PasswordResetRepository::updateToken($user, $token);
+            } else {
+                PasswordResetRepository::createToken($email, $token);
+            }
+            Toastr::success('Send Mail Password Reset Success !');
+            $url = 'http://localhost:8000/forgot-form?token=' . $token;
+            Log::info("Add jobs to Queue , Email: $email with URL: $url");  
+
+            // Mail::to($email)->send(new ForgotPassword($url));     <= Không dùng Queue 
+            // SendForgotPasswordEmail::dispatch($email, $url);      <= Dùng Queue với drive 'sync'
+            Queue::push(new SendForgotPasswordEmail($email, $url));  <= Đưa vào hàng đợi (dùng drive database)
+
+            return redirect()->back();
+        }
+
+
+    + Chạy lệnh : php artisan queue:work
+
+    + Nói thêm (nếu dùng drive database thì file queue.php không cần sửa gì cả): 
+        intern-php\config\queue.php : 
+        'connections' => [
+            ...
+            'database' => [
+                'driver' => 'database',    <= tên drive 
+                'table' => 'jobs',         <= tên bảng trong database 
+                'queue' => 'default',      <= tên của queue, ta có thể đặt cái tên gì cũng được ví dụ : 'send_mail_forgot_password'
+                'retry_after' => 90,       <= 90 xác định thời gian (giây) sau khi mà các công việc thất bại sẽ được thử lại.
+                'after_commit' => false,   <= false xác định xem việc thêm công việc vào hàng đợi có thể hoãn lại sau khi commit transaction không. Nếu bạn muốn hoãn việc thêm công việc vào hàng đợi cho đến khi sau khi giao dịch được commit, bạn có thể đặt true.
+            ],
+            ...
+        ]
+
+Kết quả thu được : 
+    + Trong database sẽ có bảng jobs 
+        => Khi mà ta bấm gửi email forgot password 
+        => Thì một dòng dữ liệu sẽ được thêm vào bảng jobs của database : 
+
+            id    queue                      payload                                                                                                                                                                                                                                                                      attempts      reserved_at     available_at      created_at 
+            7     send_mail_forgot_password  {"uuid":"8fe24c75-caad-497b-a026-6592551a0d5e","displayName":"App\\Jobs\\SendForgotPasswordEmail","job":"Illuminate\\Queue\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null," [...]       0             NULL            1692947448        1692947448
+
+            + id : tự động tăng 
+            + queue : là tên mình ghi vào file queue.php 
+            + còn lại các dữ liệu khác của cột khác sẽ được tự thêm vào 
+
+        => Dòng này sẽ được thêm và biến mất nhanh chóng , chính vì thế muốn quan xác thì khi bấm submit gửi mail xong 
+            thì phải click vào bảng jobs nhanh thì mới xem được dòng này 
+
+        => Khi jobs được thực hiện xong thì dòng dữ liệu tương ứng của jobs đó nằm trong bảng sẽ được xóa đi 
+        
+    + Ngoài ra khi dùng drive 'database'
+        => Thì ở terminal chạy lệnh 'php artisan queue:work' sẽ có thêm các dòng này : 
+
+            2023-08-25 06:49:36 App\Jobs\SendForgotPasswordEmail .................................. RUNNING
+            2023-08-25 06:49:39 App\Jobs\SendForgotPasswordEmail .......................... 3,380.14ms DONE
+            2023-08-25 06:50:13 App\Jobs\SendForgotPasswordEmail .................................. RUNNING
+            2023-08-25 06:50:14 App\Jobs\SendForgotPasswordEmail .......................... 1,538.84ms DONE
+            2023-08-25 06:50:29 App\Jobs\SendForgotPasswordEmail .................................. RUNNING
+
+        => Mỗi jobs đang thực hiện hay thực hiện xong thì nó sẽ in ra như này . 
+        => Ở đây thì chỉ có jobs SendForgotPasswordEmail nên nó chỉ in ra SendForgotPasswordEmail
+        => Có thêm cái khác nữa ví dụ SendMailWelCome thì nó cũng sẽ in ra như này . 
+    
+        + Ví dụ như ta tạo thêm jobs SendMailWelCome : Khi chạy 'php artisan queue:work' sẽ được 
+
+            2023-08-25 07:41:41 App\Jobs\SendForgotPasswordEmail ................................. RUNNING
+            2023-08-25 07:41:44 App\Jobs\SendForgotPasswordEmail ......................... 3,214.64ms DONE
+            2023-08-25 07:41:44 App\Jobs\SendMailWelCome ......................................... RUNNING
+            2023-08-25 07:41:46 App\Jobs\SendMailWelCome ................................. 1,400.86ms DONE 
+
+
+    + Nói thêm : 
+        + Do ta đang chạy lệnh 'php artisan queue:work' sẽ các hàng đợi được ghi vào table jobs trong database 
+            sẽ nhanh chóng được xóa khi thực hiện xong 
+        
+        => Ta không chạy lệnh này thì khi người dùng forgot password hay đăng kí thì các công việc gửi mail forgot password 
+            hay gửi mail welcome chào mừng sẽ được thêm vào table jobs NHƯNG MÀ SẼ CHƯA ĐƯỢC THỰC HIỆN 
+            => Dữ liệu sẽ vẫn còn đó cho đến khi ta chạy lệnh 'php artisan queue:work' 
+            thì hệ thống sẽ lấy ra các công việc trong bảng jobs và thực hiện nó . 
+
+        => Mặc khác, chính vì thế nên nếu muốn quan sát được dữ liệu được thêm vào bảng jobs 
+            => thì đừng chạy lệnh 'php artisan queue:work' 
+
+Ưu điểm : 
+    + Dễ thấy là ta không còn phải chờ giống như lúc trước nữa, vì bây giờ công việc đã được đưa vào hàng đợi . 
+    + Tốc độ tất nhiên là nhanh hơn .  
+
+------------------------------------------------------------
+Nói thêm : Giả sử bây giờ muốn gửi 1000 cái mail cho 1 người 
+    => for 1000 cho 1000 công việc vào hàng đợi sau đó chạy lệnh là nó thực hiện 1000 lần. 
+
+for($i=0; $i<1000; $i++) {
+    Queue::push(new SendMailWelCome($user->email, $user->name));
+}
+=> Lưu 1000 lần gửi maill vào table jobs 
+=> Sau đó chạy lệnh 'php artisan queue:work' là nó sẽ gửi 1000 lần . 
+
+------------------------------------------------------------
+php artisan make:seeder UsersTableSeeder
+php artisan make:factory UserFactory
+php artisan db:seed --class=UsersTableSeeder
+php artisan db:seed --class=Seeder1Seeder,Seeder2Seeder
+php artisan make:seeder ArticlesTableSeeder
+php artisan make:factory ArticleFactory
+php artisan db:seed --class=ArticlesTableSeeder
+php artisan make:request StoreUserRequest
+php artisan make:rule Uppercase
+php artisan make:rule GreaterThanAnotherField
+php artisan view:cache
+php artisan config:cache
+php artisan make:job SendDailyEmail
+php artisan make:mail DailyEmail
+php artisan 
+php artisan make:command SendMail
+php artisan users:sendmail
+php artisan make:job SendEmailJob
+php artisan make:migration create_users_table
+php artisan make:migration create_comments_table
+php artisan make:migration create_categories_table (số nhiều)
+php artisan make:migration update_id_column_in_table_name
+php artisan migrate
+php artisan migrate:rollback --path=database/migrations/2023_08_24_095302_update_id_column_in_password_resets.php
+php artisan migrate
+php artisan migrate:rollback
+php artisan make:migration remove_id_from_password_resets --table=password_resets
+php artisan migrate
+php artisan make:migration remove_id_from_password_resets --table=password_resets
+php artisan make:migration change_email_type_in_password_resets_table --table=password_resets
+php artisan migrate:refresh --path=/database/migrations/2014_10_12_100000_create_password_resets_table.php
+php artisan make:job SendForgotPasswordEmail
+php artisan schedule:run
+php artisan users:sendmail
+php artisan serve --host=192.168.11.159
+php artisan queue:table
+php artisan migrate --path=/database/migrations/2023_08_25_063317_create_jobs_table.php
+php artisan queue:work
+php artisan make:migration add_phone_number_to_users --table=password_resets
+
+------------------------------------------------------------
+Laravel9 API 
+
++ Xem danh sách đã cài trong composer : composer show 
++ composer require tomfordrumm/jwt-auth:dev-develop (laravel9 thì này vẫn ok)
+    + ở bài viết này thì nó hướng dẫn nếu không cài tomfordrumm/jwt-auth thì cài php-open-source-saver/jwt-auth : https://blog.logrocket.com/implementing-jwt-authentication-laravel-9/
+
+------------------------------------------------------------
+In lỗi ra thì chỉ cần thêm dòng này : 
+    @if ($errors->has('name'))  // kiểm tra nếu có lỗi 'name' trong $errors thì in lỗi ra 
+        <span class="text-danger ml-3">{{ $errors->first('name') }}</span>
+    @endif
+
+Tương tự : 
+    @if ($errors->has('g-recaptcha-response'))
+    <span
+        class="text-danger ml-3">{{ $errors->first('g-recaptcha-response') }}</span>
+    @endif
+
+Với name và g-recaptcha-response là tên các tham số truyền vào request khi submit form.
+Ta có :
+    intern-php\app\Http\Requests\RequestUpdateInfor.php : có đoạn code :        
+        return [
+            'name' => ['required', new Uppercase],
+            'username' => 'required|unique:users,username,' . Auth::user()->id,
+            'email' => 'required|email|unique:users,email,' . Auth::user()->id,
+            'gender' => 'required',
+        ];
+    
+    => khi duyệt qua request validate thì tên (name) của tham số nào lỗi không đúng yêu cầu khi submit form 
+    thì nó sẽ được lưu vào biến lớn nhất là biến $errors
+
+------------------------------------------------------------    
+Nếu route được ghi như thế này thì có thể link đến được hàm đó : 
+    Route::post('/delete/{id}', [ArticleController::class, 'deleteArticleAdmin'])->name('delete');
+    => Nhấn giữ ctrl + click vào deleteArticleAdmin thì ta sẽ link đến được  
+
+------------------------------------------------------------  
+Nếu dùng nhiều hơn một auth , ví dụ dùng cả user và admin thì không được dùng 
+    Session::flush(); , vì nó sẽ xóa sạch toàn bộ session => đăng xuất cả user và admin . 
+    Chỉ nên dùng Auth::guard('user')->logout(); . 
+
+------------------------------------------------------------  
+
++ Mutiple Authentication trong Laravel Web (Không phải API)
+    + Ta đã làm được Mutiple Authentication trong Laravel API JWT 
+    + Bây giờ làm trong Web : https://www.regur.net/blog/multiple-authentication-in-laravel/
+
++ Cách làm : 
+    + php artisan make:model Admin -m -c 
+
++ intern-php\config\auth.php 
+    <?php
+        return [
+
+            
+            'defaults' => [
+                'guard' => 'web',
+                'passwords' => 'users',
+            ],
+
+
+            'guards' => [
+                'web' => [
+                    'driver' => 'session',
+                    'provider' => 'users',
+                ],
+                'admin' => [
+                    'driver' => 'session',
+                    'provider' => 'admins',
+                ],
+                'user' => [
+                    'driver' => 'session',
+                    'provider' => 'users',
+                ],
+            ],
+
+            'providers' => [
+                'users' => [
+                    'driver' => 'eloquent',
+                    'model' => App\Models\User::class,
+                ],
+                'admins' => [
+                    'driver' => 'eloquent',
+                    'model' => App\Models\Admin::class,
+                ],
+            ],
+
+            'passwords' => [
+                'users' => [
+                    'provider' => 'users',
+                    'table' => 'password_resets',
+                    'expire' => 60,
+                    'throttle' => 60,
+                ],
+            ],
+
+            'password_timeout' => 10800,
+
+        ];
+
++ intern-php\app\Models\Admin.php
+    <?php
+
+        namespace App\Models;
+        
+        use Illuminate\Database\Eloquent\Factories\HasFactory;
+        use Illuminate\Foundation\Auth\User as Authenticatable;
+        use Illuminate\Notifications\Notifiable;
+        use Laravel\Sanctum\HasApiTokens;
+        
+        class Admin extends Authenticatable
+        {
+            use HasApiTokens;
+            use HasFactory;
+            use Notifiable;
+        
+            protected $guard = 'admin';
+        
+            protected $fillable = ['name', 'email', 'password', 'role', 'avatar'];
+        
+            protected $hidden = ['password', 'remember_token'];
+        }
+
+    => Quan trọng là extends Authenticatable
+        
++ Còn lại mọi thứ đều giống bình thường, không có gì cả . 
+
++ Sử dụng : 
+    + Ở file web.php : 
+        + Nếu lúc trước sử dụng : 
+            Route::middleware(['auth'])->group(function () { 
+
+        + Thì bây giờ phân chia ra rồi sẽ là : 
+            Route::middleware(['auth:user'])->group(function () {
+            Route::middleware(['auth:admin'])->group(function () {
+
+    + Ở code Blade : 
+        + Lúc trước : 
+            @if($article->id_user == auth()->user()->id) 
+
+        + Bây giờ : 
+            @if($article->id_user == auth()->guard('user')->user()->id) 
+            @if($article->id_user == auth()->guard('admin')->user()->id) 
+
+    + Code Login (Controller, Service, Model,...)
+        + Lúc trước : 
+            Auth::user()
+
+        + Bây giờ : 
+            Auth::guard('user')->check()
+            Auth::guard('admin')->check()
+
+    + Các câu lệnh khác dùng auth , hay Auth để lấy id hay check hay login các thứ ,... đều tương tự .  
+            Auth::guard('admin')->attempt($credentials)
+            Auth::guard('admin')->logout();
+
+            Auth::guard('user')->attempt($credentials)
+            Auth::guard('user')->logout();
+
+    => Tóm lại cho dễ hiểu là mọi thứ đều hoàn toàn giống như trước có đều trước mỗi auth() 
+    hay Auth() thì đầu tiên ta phải bổ sung thêm vào : guard('user') hoặc guard('admin')
+
+
+    + Code : 
+        web.php  
+        <?php
+
+            // Blog
+            Route::prefix('blog')->controller(ArticleController::class)->name('blog.')->group(function () {
+                Route::middleware(['auth:user'])->group(function () {
+
+                                ...
+                    Route::get('/add', 'showAdd')->name('add');
+                    Route::get('/detail/{id}', 'showDetail')->name('show');
+                                ...
+
+                });
+            });
+
+            // Infor
+            Route::prefix('infor')->controller(UserController::class)->name('infor.')->group(function () {
+                Route::middleware(['auth:user'])->group(function () {
+                                ...
+                    Route::post('/change-password', 'changePassword')->name('change_password');
+                                ...
+                });
+            });
+
+            // Main
+            Route::prefix('main')->controller(CommentController::class)->name('main.')->group(function () {
+                                ...
+                Route::get('/personal-page/{id_user}', 'personalPage')->name('personal_page');
+                                ...
+            });
+
+            // Admin
+            Route::prefix('admin')->controller(AdminController::class)->name('admin.')->group(function () {
+                Route::get('/login', 'login')->name('login');
+                Route::post('/admin-login', 'adminLogin')->name('post_login');
+                Route::post('/admin-register', 'adminRegister')->name('post_register');
+
+                // Forgot Password
+                Route::post('forgot-pw-sendcode', 'forgotSend')->name('forgot_sendcode');
+                Route::get('/forgot-form', 'forgotForm');
+                Route::post('forgot-update', 'forgotUpdate')->name('forgot_update');
+
+                Route::middleware(['auth:admin'])->group(function () {
+                                ...
+                    Route::get('/comment', [CommentController::class, 'allCommentAdmin'])->name('comment');
+                    Route::get('/ajax-search-cmt-admin', [CommentController::class, 'ajaxSearchCmtAdmin'])->name('search_comment');
+                    Route::post('/delete-cmt/{id}', [CommentController::class, 'deleteCommentAdmin'])->name('delete_comment');
+
+                    Route::get('/all-admin', 'allAdmin')->name('all_admin');
+                    Route::get('/add-admin', 'addAdmin')->name('add_admin');
+                    Route::get('/change-role', 'changeRole')->name('change_role');
+                                ...
+
+                });
+            });
+
+------------------------------------------------------------  
++ Một số chức năng khác mà mình có làm trong project là : 
+    + Tạo seeder cho Admin , vì admin không register như bình thường nên 
+    nếu làm dự án cho người khác thì ta phải tạo seeder để có tài khoản đầu tiên . 
+    + Sau đó dùng tài khoản này để add các toàn khoản khác . 
+
++ Chức năng quên mật khẩu mình thêm cột is_user để có thể dùng cho cả User và Admin 
++ Còn lại thì là ajax và một số thứ khác chứ không có gì mới 
+------------------------------------------------------------  
++ sử dụng các hàm base => tối ưu 
++ Laravel 9 Cron Job Task Scheduling Tutorial https://www.itsolutionstuff.com/post/laravel-9-cron-job-task-scheduling-tutorialexample.html https://gist.github.com/Splode/94bfa9071625e38f7fd76ae210520d94
++ Code thêm Admin quản lí tất cả bài viết , quản lí tất cả người dùng , quản lí tất cả comment . 
+    + Thêm cột status vào cho User (tham khảo giao diện quản lí người dùng ở project Laravel-API - Vuejs)
+    + 0 và 1 (khi register thì tài khoản có status mặc định sẽ là 0 => được admin duyệt thì status sẽ là 1)
+        + khi bị khóa thì status cũng có giá trị là 0 . 
+        Khi user login thì check xem user có status là 0 hay 1 . 0 thì không cho vào , 1 thì cho vào . 
+    
+    + super admin mới có quyền thêm tài khoản và thay đổi role của một admin là 1 hay 0 
+        1 = superadmin , 0 = admin . 
+    + superadmin có quyền xóa tài khoản superadmin , admin , change role tài khoản superadmin , admin 
+
+    + change status người dùng 
+    + Tài khoản admin được tạo sẽ mặc định là role = 0 (admin) , mật khẩu được gửi về email được cấp . 
+
+    + sự kiện thay đổi status của người dùng . 
+        + dùng ajax để thay đổi status người dùng . 
+        + đồng thời , kiểm tra nếu trên hệ thống này có Auth::guard('user')->user()->id 
+        bằng với id đang bị thay đổi status sang 0 => cho nó đăng xuất ngay . 
+        (Vì nếu không cho nó đăng xuất thì khi ta thay đổi status thì khi qua lại trang của user nó vẫn còn , 
+        mặc dù biết là khi logout sau đó login rồi mới bị - làm như vậy để user bị ngay khi mà admin login
+            + Phân tích thêm : cái này là cách chỉ áp dụng được khi admin và user đăng nhập trên cùng một cửa sổ thôi)
+            Thật sự thì phải dùng cách khác , ví dụ như socket hoặc là , trước khi query route nào có auth:user thì 
+            đều phải check xem status của user đó có đang là 1 hay không 
+
+    + Tài khoản được tạo ra bằng register thì cho status = 0 , còn register bằng google hay github thì cho status = 1 . 
+        + Nếu register bằng google hay github thì cho mặc định là 1 , nhưng khi đăng nhập bằng google hay gihub thì 
+        phải check , nếu = 0 thì cũng không cho vào . 
+
+    + Các tài khoản bị khóa sẽ bị ẩn bài viết , cmt trên mỗi bài viết . 
+        + Tuy nhiên trang cá nhân vẫn vào xem được .  
+
+    + Search theo super admin và admin 
+        => Có thể thêm selection option trên thanh search (0-1-2) (2 là cả search cả 2 loại)
+    
+------------------------------------------------------------  
+composer require socialiteproviders/github:^4.1 socialiteproviders/google:^4.1 socialiteproviders/twitter:^4.1
+
+OAuth2 Google trong API Laravel 
+
+Truy cập vào : https://console.cloud.google.com/apis/credentials/oauthclient/1079359168744-ehm0qmfgmg4imvbk33n7d97t69sfjb87.apps.googleusercontent.com?project=soy-vision-362513
+    => Ở Authorized redirect URIs => thêm url 
+        Ta có URL1 : http://localhost:8000/authorized/google/callback (web)
+        URL2 : http://localhost:8000/api/user/authorized/google/callback (api)
+
+service.php : 
+    'google' => [
+        'client_id' => '1079359168744-ehm0qmfgmg4imvbk33n7d97t69sfjb87.apps.googleusercontent.com',
+        'client_secret' => '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',
+        'redirect' => 'http://localhost:8000/api/user/authorized/google/callback',
+    ],
+
+api.php : 
+    // Customer 
+    Route::prefix('user')->controller(UserController::class)->group(function () {
+        // OAuth2
+        Route::get('authorized/google', [UserController::class, 'redirectToGoogle'])->name('google');
+        Route::get('authorized/google/callback', [UserController::class, 'handleGoogleCallback']);
+    });
+
+UserController : 
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->stateless()->user();
+            return response()->json([
+                'message' => 'User successfully registered',
+                'user' => $user
+            ], 201);
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+
+    => Điểm khác so với OAuth2 Google web là thêm ->stateless() 
+
+------------------------------------------------------------  
+Cách update một cái gì đó unique của một bảng mà không bị đã tồn tại bởi cái hiện tại . 
+Ví dụ : update thông tin của một user nhưng trong request ta gửi vào có email nữa (email ta không thay đổi)
+    => Nó check trogn database có email này và báo ra là đã tồn tại email này , mặc dù email này chính là email của tài
+    khoản ta đang update . Nghĩa là chỉ có 1 email này thôi , cũng chính là email của tài khoản ta đang update nhưng 
+    nó vẫn báo là đã tồn tại và in ra lỗi . Dẫn đến không update được thông tin của những cái khác . 
+    Dưới đây là cách khắc phục . 
+
+api.php : 
+Route::prefix('user')->controller(UserController::class)->group(function () {
+
+        ...
+        Route::patch('{user}', 'updateProfile');     (***)
+        ...
+
+    });
+});
+
+Postman : 
+    http://localhost:8000/api/user/8
+    => số 8 đây chính là id của user sẽ được lưu vào biến {user} (***)
+
+laravel9api\app\Http\Requests\RequestUpdateUser.php
+    <?php
+        namespace App\Http\Requests;
+
+        use Illuminate\Foundation\Http\FormRequest;
+        use Illuminate\Http\Exceptions\HttpResponseException;
+        use Illuminate\Contracts\Validation\Validator;
+        use Illuminate\Validation\Rule;
+
+        class RequestUpdateUser extends FormRequest
+        {
+
+            public function authorize()
+            {
+                return true;
+            }
+
+            public function rules()
+            {
+                $userId = $this->route('user');   (***)
+
+                return [
+                    'fullname' => 'required|string|between:2,100',
+                    'email' => ['required','string','email','max:100',Rule::unique('users')->ignore($userId)],
+                    'username' => ['required','string','max:100',Rule::unique('users')->ignore($userId)],
+                    'address' => 'required|string|min:1',
+                    'date_of_birth' => 'required|string|min:1',
+                    'phone' => 'required|min:9|numeric',
+                    'gender' => 'required|in:1,0',
+                ];
+            }
+            ...
+        }
+
+    Giải thích : 
+        (***) : Đặt tên là gì thì lấy ra cái đó . 
+        'email' => ['required','string','email','max:100',Rule::unique('users')->ignore($userId)],
+        'username' => ['required','string','max:100',Rule::unique('users')->ignore($userId)],
+    
+Kết quả : 
+    + Nếu email được gửi lên mà không đổi thì nó không cập nhật email 
+    + Email gửi lên mà thay đổi thì nó check xem các tài khoản khác có email này không 
+    nếu có thì nó không cho đổi còn nếu chưa có thì nó cho đổi . 
+
+
+------------------------------------------------------------  
+    public function logout()
+    {
+        auth('user_api')->logout();     <== Với câu lệnh này thì jwt được gửi vào header đó sẽ không còn tác dụng nữa . 
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+------------------------------------------------------------  
+Đây là cách trả về thông báo khi code Web Laravel 
+    <?php
+        namespace App\Http\Requests;
+        
+        use Brian2694\Toastr\Facades\Toastr;
+        use Illuminate\Foundation\Http\FormRequest;
+        
+        class RequestCreateUser extends FormRequest
+        {
+            public function authorize()
+            {
+                return true; // true là cho tất cả vào . false là chỉ đăng nhập mới request này được .
+            }
+        
+            public function rules()
+            {
+                return [
+                    'name' => 'required',
+                    'username' => 'required',
+                    'email' => 'required|email',
+                    'password' => 'required|min:6',
+                    'confirm-password' => 'required|same:password',
+                    'gender' => 'required',
+                    'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                ];
+            }
+        
+            public function withValidator($validator)
+            {
+                if ($validator->fails()) {
+                    foreach ($validator->errors()->all() as $error) {
+                        Toastr::error($error);
+                    }
+                }
+            }
+        }
+------------------------------------------------------------  
+Đây là cách trả về thông báo khi code API Laravel 
+    <?php
+        namespace App\Http\Requests;
+
+        use Illuminate\Foundation\Http\FormRequest;
+        use Illuminate\Http\Exceptions\HttpResponseException;
+        use Illuminate\Contracts\Validation\Validator;
+
+        class RequestCreateUser extends FormRequest
+        {
+            /**
+            * Determine if the user is authorized to make this request.
+            *
+            * @return bool
+            */
+            public function authorize()
+            {
+                return true;
+            }
+
+            /**
+            * Get the validation rules that apply to the request.
+            *
+            * @return array<string, mixed>
+            */
+            public function rules()
+            {
+                return [
+                    'fullname' => 'required|string|between:2,100',
+                    'email' => 'required|string|email|max:100',
+                    'username' => 'required|string|max:100|unique:users',
+                    'password' => 'required|string|confirmed|min:6',
+                    'address' => 'required|string|min:1',
+                    'date_of_birth' => 'required|string|min:1',
+                    'phone' => 'required|min:9|numeric',
+                    'gender' => 'required|in:1,0',
+                ];
+            }
+
+            public function failedValidation(Validator $validator)
+            {
+                throw new HttpResponseException(response()->json([
+                    'success'   => false,
+                    'message'   => 'Validation errors',
+                    'data'      => $validator->errors()
+                ]));
+
+            }
+
+            public function messages()
+            {
+                return [
+                    'title.required' => 'Title is required',
+                    'body.required' => 'Body is required'
+                ];
+            }
+        }
+------------------------------------------------------------  
+Request đổi mật khẩu :
+    public function changePassword(RequestChangePassword $request) {
+        $user = User::find($request->id);
+        if (!(Hash::check($request->get('current_password'), $user->password))) {
+            return response()->json([
+                'message' => 'Your current password does not matches with the password.',
+            ],400);
+        }
+        $user->update(['password' => bcrypt($request->get('new_password'))]);
+        return response()->json([
+            'message' => "Password successfully changed !",
+        ],200);
+    }
+
+    <?php
+
+        namespace App\Http\Requests;
+
+        use Illuminate\Foundation\Http\FormRequest;
+        use Illuminate\Http\Exceptions\HttpResponseException;
+        use Illuminate\Contracts\Validation\Validator;
+        use Illuminate\Validation\Rule;
+
+        class RequestChangePassword extends FormRequest
+        {
+            public function authorize()
+            {
+                return true;
+            }
+
+            public function rules()
+            {
+                return [
+                    'current_password' => 'required',
+                    'new_password' => 'required|string|min:6|confirmed|different:current_password',
+                ];
+            }
+
+            public function failedValidation(Validator $validator)
+            {
+                throw new HttpResponseException(response()->json([
+                    'success'   => false,
+                    'message'   => 'Validation errors',
+                    'data'      => $validator->errors()
+                ]));
+
+            }
+
+            public function messages()
+            {
+                return [
+                    'title.required' => 'Title is required',
+                    'body.required' => 'Body is required'
+                ];
+            }
+        }
+
+
+        Giải thích : 
+            return [
+                'current_password' => 'required',
+                'new_password' => 'required|string|min:6|confirmed|different:current_password',
+            ];
+
+            => Mật khẩu mới phải khác với mật khẩu cũ : |different:current_password
+            => Mật khẩu mới phải được xác nhận và phải đúng với mật khẩu xác nhận => 'new_password' => |confirmed
+                => lúc này ta thêm param "new_password_confirmation":"nguyenvanmanh2001it1" 
+                => là nó tự động hiểu đây là confirm của new_password
+                cú pháp muốn confirm cái gì thì [tên]_confirmation 
+                => lúc này phải giống thì mới pass tiếp 
+
+            => còn lại mấy cái khác thì biết rồi 
+
+            Postman : 
+            {
+                "id":9,
+                "current_password":"vanmanh999",
+                "new_password":"nguyenvanmanh2001it1",
+                "new_password_confirmation":"nguyenvanmanh2001it1"
+            }
+
+
+------------------------------------------------------------  
+pusher laravel
+
+------------------------------------------------------------  
+public function likeArticle(Request $request)
+{
+    $id_user = Auth::guard('user')->user()->id;
+    $id_article = $request->id_article;
+    $is_like = $request->is_like;
+    $liked = Liked::where('id_article', $id_article)->first();
+
+    if($is_like == 0){
+        if ($liked) {
+            $id_users = json_decode($liked->id_users); // chuyển mảng trong database sang kiểu mảng bình thường bằng json_decode 
+            $id_users = array_filter($id_users, function ($value) use ($id_user) { // loại bỏ một phần tử khỏi mảng bằng fillter 
+                return $value !== $id_user;
+            });
+            if(count($id_users) == 0){
+                $liked->delete();
+            }
+            else {
+                $liked->update([
+                    'id_users' => json_encode($id_users), // encode để lưu vào database 
+                ]);
+            }
+        }
+
+    }
+    else {
+        if ($liked) {
+            $id_users = json_decode($liked->id_users);
+            
+            if (!in_array($id_user, $id_users)) { // kiểm tra số đó có trong mảng hay không 
+                $id_users[] = $id_user; // add $is_user to array // thêm một phần tử vào mảng 
+                $liked->update([
+                    'id_users' => json_encode($id_users),
+                ]);
+            }
+        } else {
+            $id_users = [$id_user];
+            Liked::create([
+                'id_users' => json_encode($id_users),
+                'id_article' => $id_article,
+            ]);
+        }
+        
+        return response()->json([
+            'id_user' => $id_user,
+            'id_article' => $request->id_article,
+            'is_like' => $request->is_like,
+        ]);
+    }
+}
+
+------------------------------------------------------------  
+public static function getAllArticleMain()
+{
+    return (new self)->model->join('users', 'users.id', '=', 'articles.id_user')
+        ->leftjoin('likeds', 'likeds.id_article', '=', 'articles.id') // ở đây phải là leftjoin , không được sử dụng join (*)
+        ->select('articles.*', 'users.*', 'articles.id as id_article', 'users.id as id_user', 'likeds.id_users as user_likes')
+        ->withCount('commentsCount')
+        ->where('users.status', '!=', 0)
+        ->orderBy('articles.id', 'DESC');
+}
+
+(*) : Phải là leftjoin để nếu với bài viết đó mà trong bảng likeds không có thì nó vẫn lấy bài viết đó và cho cột user_likes là null 
+còn nếu dùng join thì nó chỉ lấy những bài viết mà có tồn tại id_article trong bảng likeds 
+Nghĩa là nếu bảng likeds thiếu thì vẫn lấy đầy đủ bảng articles 
+
+------------------------------------------------------------  
+Transactional : https://viblo.asia/p/mysql-database-transactions-ung-dung-transactions-trong-laravel-3KbvZ1LLGmWB
+
+------------------------------------------------------------  
+Thêm code transaction vào Repository (Nếu code ngay trong controller thì bỏ những transaction này trong controller)
+
+    use Illuminate\Support\Facades\DB;
+
+    class ArticleRepository
+    {
+        public function updateArticle($input)
+        {
+            DB::beginTransaction(); // Bắt đầu giao dịch
+
+            try {
+                // Thực hiện các thao tác cơ sở dữ liệu ở đây
+
+                DB::commit(); // Lưu thay đổi nếu không có lỗi
+            } catch (Exception $e) {
+                DB::rollback(); // Hoàn tác nếu có lỗi
+                throw $e; // Nếu bạn muốn ném ngoại lệ để xử lý ngoại lệ ở các tầng trên
+            }
+        }
+    }
+
+=> Chỉ thêm transaction vào những nơi có thay đổi dữ liệu như : create , update , delete . 
+Còn get thì không thêm vào làm gì cả . 
+
+------------------------------------------------------------  
+Note : 
+
+    + Không được code như này : 
+        public function addArticle($input)
+        {
+            DB::beginTransaction();
+            try {
+                return $this->model->create([
+                    'id_user' => $input->id_user,
+                    'title' => $input->title,
+                    'content' => $input->content,
+                ]);
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollback();
+                throw $e; 
+            }
+        }
+    
+        => Bởi vì lệnh DB::commit(); nằm sau lệnh return nên nó sẽ không bao giờ được thực hiện 
+        => Dẫn đến data không được commit => dẫn đến dữ liệu không được create hay update ,... 
+        => Phải để trước lệnh return . 
+
+    + Phải là : 
+        public function addArticle($input)
+        {
+            DB::beginTransaction();
+            try {
+                $article = $this->model->create([  <= khai báo biến chứa toàn bộ lệnh create 
+                    'id_user' => $input->id_user,
+                    'title' => $input->title,
+                    'content' => $input->content,
+                ]);
+                DB::commit();   <= để trước lệnh return 
+                return $article; <= chỉ có một lệnh return nên đảm bảo lệnh này luôn đúng và sẽ không có lỗi gì cả . 
+            } catch (Exception $e) {
+                DB::rollback();
+                throw $e; 
+            }
+        }
+
+------------------------------------------------------------  
+Tối ưu trong Laravel bằng query 1=1 
+    + https://pushmetrics.io/blog/why-use-where-1-1-in-sql-queries-exploring-the-surprising-benefits-of-a-seemingly-redundant-clause/#:~:text=One%20common%20concern%20is%20whether,the%20performance%20impact%20is%20negligible.
+
+------------------------------------------------------------  
+Trigger in mysql
+
+------------------------------------------------------------  
+Trong Window không có Cron jobs như trên các hệ điều hành Unix (như Linux). 
+Mà Window sử dụng Task Scheduler (click vào kính lúp vào tìm kiếm 'Task Scheduler')
+https://quantizd.com/how-to-use-laravel-task-scheduler-on-windows-10/
+Tham khảo file : G:\E\Users\Máy tính\Other\How to use Laravel Task Scheduler on Windows 10.docx
+
+Cách làm : 
+    + Đầu tiên chuẩn bị các code để thực hiện Schedule . 
+        php artisan make:mail ReminderMail
+        php artisan make:job SendReminderMail
+        php artisan make:command ReminderMailCommand
+
+
+        + intern-php\app\Console\Commands\ReminderMailCommand.php : 
+            <?php
+                namespace App\Console\Commands;
+                use App\Jobs\SendReminderMail;
+                use Illuminate\Console\Command;
+                use App\Mail\DailyEmail;
+                use App\Models\User;
+                use Illuminate\Support\Facades\Mail;
+                use Illuminate\Support\Facades\Queue;
+                class ReminderMailCommand extends Command
+                {
+                    protected $signature = 'users:sendreminder';
+                    protected $description = 'Send reminder mail to all users by running this command';
+                    public function __construct()
+                    {
+                        parent::__construct();
+                    }
+                    public function handle()
+                    {
+                        $users = User::all();
+                        foreach ($users as $user) {
+                            Queue::push(new SendReminderMail($user));
+                        }
+                    }
+                }
+
+        + intern-php\app\Console\Kernel.php : 
+            <?php
+                namespace App\Console;
+                use App\Jobs\SendDailyEmail;
+                use Illuminate\Console\Scheduling\Schedule;
+                use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+                class Kernel extends ConsoleKernel
+                {
+                    protected $commands = [
+                        Commands\SendMail::class,
+                    ];
+                    protected function schedule(Schedule $schedule)
+                    {
+                        $schedule->command('users:sendreminder')->everyMinute();
+                    }
+                    protected function commands()
+                    {
+                        $this->load(__DIR__ . '/Commands');
+                        require base_path('routes/console.php');
+                    }
+                }
+
+        + intern-php\app\Jobs\SendReminderMail.php : 
+            <?php
+                namespace App\Jobs;
+                use App\Mail\ReminderMail;
+                use App\Models\User;
+                use Illuminate\Bus\Queueable;
+                use Illuminate\Contracts\Queue\ShouldBeUnique;
+                use Illuminate\Contracts\Queue\ShouldQueue;
+                use Illuminate\Foundation\Bus\Dispatchable;
+                use Illuminate\Queue\InteractsWithQueue;
+                use Illuminate\Queue\SerializesModels;
+                use Illuminate\Support\Facades\Mail;
+                use Illuminate\Support\Facades\Log;
+                class SendReminderMail implements ShouldQueue
+                {
+                    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+                    public $user;
+                    public function __construct(User $user)
+                    {
+                        $this->user = $user;
+                    }
+                    public function handle()
+                    {
+                        $email = $this->user->email;
+                        $name = $this->user->name;
+                        Mail::to($email)->send(new ReminderMail($this->user));
+                        Log::info("Email Reminder sent to $email with Name: $name");
+                    }
+                }
+
+        + intern-php\app\Mail\ReminderMail.php : 
+            <?php
+                namespace App\Mail;
+                use Illuminate\Bus\Queueable;
+                use Illuminate\Contracts\Queue\ShouldQueue;
+                use Illuminate\Mail\Mailable;
+                use Illuminate\Mail\Mailables\Content;
+                use Illuminate\Mail\Mailables\Envelope;
+                use Illuminate\Queue\SerializesModels;
+                use App\Models\User;
+                class ReminderMail extends Mailable
+                {
+                    use Queueable, SerializesModels;
+                    public $user;
+                    public function __construct(User $user)
+                    {
+                        $this->user = $user;
+                    }
+                    public function build()
+                    {
+                        return $this->markdown('emails.reminder', ['user' => $this->user]);
+                    }
+                }
+
+        + intern-php\resources\views\emails\reminder.blade.php : 
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Send mail to all users using Window's Task Scheduler and Laravel's Command and Queue</title>
+            </head>
+            <body>
+                <h1>Send mail to all users using Window's Task Scheduler and Laravel's Command and Queue</h1>
+                <h1>Send Mail Reminder Daily </h1>
+                <h1>Email : {{$user->email}}</h1>
+                <h1>Hey <span style="color: #ff5774">{{$user->name}} </span> 
+                    Have you visited the <a href="http://localhost:8000/main/view">Blog</a> today <span style="color: #007bff">{{ date('Y-m-d H:i:s') }}</span> ? 
+                    There are many articles waiting for you to read ! </h1>
+            </body>
+            </html> 
+
+
+    + Sau khi đã có được lệnh : php artisan users:sendreminder
+        Thì ta tiến hành đi đăng kí Schedule của nó bằng Task Scheduler của Window 
+        https://quantizd.com/how-to-use-laravel-task-scheduler-on-windows-10/ 
+ 
+        + Mở ứng dụng : Task Scheduler 
+        + Bên phải của ứng dụng , click chọn Create Task 
+        + Ta sẽ có 3 phần chính : General . Triggers , Actions 
+            + Ở phần General thì điền vào như sau : 
+                + Name : Laravel Reminder Mail Daily 
+                + Click chọn : Run only when user is logged on 
+                + Configure for thì : select chọn Windows 10 
+                + Click chọn Hidden 
+ 
+            + Chuyển qua tab Triggers và click New để tạo mới . Điền vào như sau :  
+                + Ở đây : Start là ngày và giờ bắt đầu thực hiện task đó (điền ngày hiện tại và giờ nào đó trong tương lai)
+                + Click chọn Daily 
+                + Recur every : 365 (Task này sẽ được thực hiện trong vòng 365 ngày) 
+                + Repeat task every : 24 hour (Lặp lại task sau mỗi 24 giờ) (nếu chỉnh ở đây 1 phút thì cứ sau mỗi phút task này sẽ lại được chạy) (Còn nếu chỉnh 24h thì mỗi ngày chạy task này một lần , đúng vào giờ đã để ở start) 
+                + for a duration of : Indefinitely 
+                + Click Enabled 
+            
+            + Chuyển qua Actions và click New để tạo mới . Đuền vào như sau : 
+                + Program/script : php 
+                + Add arguments : C:\laragon\www\intern-php\artisan users:sendreminder
+                + Giải thích : Sau khi thêm này thì ta sẽ được lệnh : php C:\laragon\www\intern-php\artisan users:sendreminder
+                    (Nó sẽ tương tự với lệnh : php artisan users:sendreminder)
+                    (Mục đích của C:\laragon\www\intern-php\artisan là để cho nó tìm đến tệp này – trong project laravel có file artisan để lưu các câu lệnh của project) 
+                    (users:sendreminder là lệnh command schedule được mình tạo ra trong laravel) 
+ 
+        + Sau khi thực hiện xong thì click OK 
+        + XONG !
+        + Tắt Task Scheduler đi và mở lại 
+        + Ở phần Active Tasks ta sẽ thấy task của mình (nó sẽ xuất hiện kể từ lần chạy đầu tiên) 
+
+        + Cứ đúng vào giờ này là nó sẽ tự động chạy lệnh : php C:\laragon\www\intern-php\artisan users:sendreminder
+        + Ta mở sẵn project : php artisan serve 
+        + Mở sẵn hàng đợi queue : php artisan queue:work (để chờ các job đến từ lệnh command schedule) 
+        + Mỗi lần đến giờ lệnh task schedule sẽ được chạy sau đó jobs được thêm vào database sau đó job được thực hiện . 
+
+=> Sau này các lệnh : php artisan serve hay php artisan queue:work cũng có thể thay được tự động thực hiện bằng Task Scheduler cũng được . 
+Nói thêm : 
+    + Mở bằng command line thường và dùng lệnh : C:\laragon\www\intern-php>php artisan users:sendreminder vẫn được . 
+    + Command line chứa : php artisan queue:work trong laragon vẫn nhận . 
+------------------------------------------------------------  
+Chỉnh giờ cho toàn bộ project : 
+    + intern-php\config\app.php : 
+        'timezone' => 'Asia/Ho_Chi_Minh',
+
+------------------------------------------------------------  
+Github : 
+    + https://github.com/NguyenVanManh-AI/LearningLaravel9 (Blog Web) 
+        + Local : C:\Users\ADMIN\Downloads\ProLaravel\LearningLaravel9
+
+    + https://github.com/NguyenVanManh-AI/laravel9api_github (API)
+        + Local : C:\laragon\www\laravel9api_github
+
+Gitlab : 
+    + https://gitlab-new.bap.jp/cuongpnv/intern-php/-/tree/tasks/ManhNV/Laravel-learning (Blog Web)
+        + Local : C:\laragon\www\intern-php
+
+    + (API)
+        + Local : C:\laragon\www\laravel9api 
+
+Ngoài (BAP.html) : 
+    + Local : C:\laragon\www\bloglaravel
+    + https://github.com/NguyenVanManh-AI/bap-bloglaravel
+
+    
+ReactJS : 
+    + Local : C:\Users\ADMIN\Downloads\ReactJS
+    + https://github.com/NguyenVanManh-AI/ReactJS
+
+
+    
+------------------------------------------------------------  
+API 
+    + Tham số page truyền vào body hay header đều được 
+        {
+            "search" : "lap",
+            "page" : 2
+        }
+
+        hoặc ...?page=2 
+
+    => Thì laravel đều hiểu đây là page 2 . 
+
+------------------------------------------------------------  
+Realtime Chat by Pusher 
+Tham khảo : 
+    + https://www.youtube.com/watch?v=ER-wOKXrbuw&t=1s
+    + https://bitbucket.org/rossedlin/chat-laravel-pusher/src/youtube/
+    + https://github.com/NguyenVanManh-AI/chat-laravel-pusher
+    + Key : https://dashboard.pusher.com/apps/1666835/keys 
+
+Note : 
+    + Làm theo hoàn toàn như video là được 
+    + Nhưng chú ý là video có sử dụng Queue (loại thường : sync) . Còn nếu ta sử dụng Queue với drive là database thì 
+    dùng lệnh : php artisan queue:work để bật queue lên . 
+
+    + Lưu ý : Việc gửi và nhận nó chỉ có tác dụng trên 2 tab hoặc 2 cửa sổ trình duyệt . 
+        => Mở duy nhất một tab thì gửi chứ nó không nhận về gì cả . 
+
+Cách làm : 
+
+    + Tạo key pusher 
+        + Vào : https://dashboard.pusher.com/
+        + Ở phần Channels click vào Manage 
+        + Click vào Create app 
+        + Ở phần Select a cluster chọn 'eu (EU (Ireland))'
+        + Click chọn Create app 
+        + Sau khi app được tạo => click vào App keys ta sẽ được : 
+            app_id = "1666835"
+            key = "b60bd100db57d4ba49c1"
+            secret = "5f8134171fd3b1a71eb5"
+            cluster = "eu"
+
+            => đây là toàn bộ thông tin của app 
+
+    + intern-php\.env
+        BROADCAST_DRIVER=pusher
+
+        PUSHER_APP_ID=1666835
+        PUSHER_APP_KEY=b60bd100db57d4ba49c1
+        PUSHER_APP_SECRET=5f8134171fd3b1a71eb5
+        PUSHER_HOST=
+        PUSHER_PORT=443
+        PUSHER_SCHEME=https
+        PUSHER_APP_CLUSTER=eu
+        
+        VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+        VITE_PUSHER_HOST="${PUSHER_HOST}"
+        VITE_PUSHER_PORT="${PUSHER_PORT}"
+        VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+        VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+    + php artisan make:event PusherBroadcast 
+    + intern-php\app\Events\PusherBroadcast.php : 
+        <?php
+
+            namespace App\Events;
+            
+            use Illuminate\Broadcasting\Channel;
+            use Illuminate\Broadcasting\InteractsWithSockets;
+            use Illuminate\Broadcasting\PresenceChannel;
+            use Illuminate\Broadcasting\PrivateChannel;
+            use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+            use Illuminate\Foundation\Events\Dispatchable;
+            use Illuminate\Queue\SerializesModels;
+            
+            class PusherBroadcast implements ShouldBroadcast
+            {
+                use Dispatchable, InteractsWithSockets, SerializesModels;
+            
+                public string $message;
+            
+                public function __construct(string $message)
+                {
+                    $this->message = $message;
+                }
+            
+                public function broadcastOn(): array
+                {
+                    return ['public'];
+                }
+            
+                public function broadcastAs(): string
+                {
+                    return 'chat';
+                }
+            }
+
+    + intern-php\app\Http\Controllers\PusherController.php : 
+        <?php
+
+            namespace App\Http\Controllers;
+
+            use App\Events\PusherBroadcast;
+            use Illuminate\Contracts\Foundation\Application;
+            use Illuminate\Contracts\View\Factory;
+            use Illuminate\Contracts\View\View;
+            use Illuminate\Http\Request;
+
+            class PusherController extends Controller
+            {
+                public function index()
+                {
+                    return view('index');
+                }
+
+                public function broadcast(Request $request)
+                {
+                    broadcast(new PusherBroadcast($request->get('message')))->toOthers();
+
+                    return view('broadcast', ['message' => $request->get('message')]);
+                }
+
+                public function receive(Request $request)
+                {
+                    return view('receive', ['message' => $request->get('message')]);
+                }
+            }
+
+    + intern-php\routes\web.php
+        Route::get('/', 'App\Http\Controllers\PusherController@index');
+        Route::post('/broadcast', 'App\Http\Controllers\PusherController@broadcast');
+        Route::post('/receive', 'App\Http\Controllers\PusherController@receive');
+
+    + intern-php\resources\views\index.blade.php : 
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <title>Chat Laravel Pusher | Edlin App</title>
+        <link rel="icon" href="https://assets.edlin.app/favicon/favicon.ico"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- JavaScript -->
+        <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <!-- End JavaScript -->
+        <!-- CSS -->
+            <link rel="stylesheet" href="{{ asset('chat/style.css') }}">
+        <!-- End CSS -->
+        </head>
+        <body>
+        <div class="chat">
+        <!-- Header -->
+        <div class="top">
+            <img src="https://assets.edlin.app/images/rossedlin/03/rossedlin-03-100.jpg" alt="Avatar">
+            <div>
+            <p>Ross Edlin</p>
+            <small>Online</small>
+            </div>
+        </div>
+        <!-- End Header -->
+        <!-- Chat -->
+        <div class="messages">
+            @include('receive', ['message' => "Hey! What's up!  👋"])
+            @include('receive', ['message' => "Ask a friend to open this link and you can chat with them!"])
+        </div>
+        <!-- End Chat -->
+        <!-- Footer -->
+        <div class="bottom">
+            <form>
+            <input type="text" id="message" name="message" placeholder="Enter message..." autocomplete="off">
+            <button type="submit"></button>
+            </form>
+        </div>
+        <!-- End Footer -->
+        </div>
+        </body>
+        <script>
+        const pusher  = new Pusher('{{config('broadcasting.connections.pusher.key')}}', {cluster: 'eu'});
+        const channel = pusher.subscribe('public');
+        //Receive messages
+        channel.bind('chat', function (data) {
+            $.post("/receive", {
+            _token:  '{{csrf_token()}}',
+            message: data.message,
+            })
+            .done(function (res) {
+            $(".messages > .message").last().after(res);
+            $(document).scrollTop($(document).height());
+            });
+        });
+        //Broadcast messages
+        $("form").submit(function (event) {
+            event.preventDefault();
+
+            $.ajax({
+            url:     "/broadcast",
+            method:  'POST',
+            headers: {
+                'X-Socket-Id': pusher.connection.socket_id
+            },
+            data:    {
+                _token:  '{{csrf_token()}}',
+                message: $("form #message").val(),
+            }
+            }).done(function (res) {
+            $(".messages > .message").last().after(res);
+            $("form #message").val('');
+            $(document).scrollTop($(document).height());
+            });
+        });
+        </script>
+        </html>
+
+    + intern-php\resources\views\broadcast.blade.php : 
+        <div class="right message">
+            <p>{{$message}}</p>
+            <img src="https://assets.edlin.app/images/rossedlin/03/rossedlin-03-100.jpg" alt="Profile picture">
+        </div>
+      
+    + intern-php\resources\views\receive.blade.php : 
+        <div class="left message">
+            <img src="https://assets.edlin.app/images/rossedlin/03/rossedlin-03-100.jpg" alt="Avatar">
+            <p>{{$message}}</p>
+        </div>
+      
+    + Một số file css khác : C:\laragon\www\intern-php\public\chat (Tới ngang đây là xong rồi , nhưng nếu nó lỗi gì thì thêm các file dưới đây)
+    + Một số file khác : 
+        intern-php\config\broadcasting.php : 
+            <?php
+                return [
+                    'default' => env('BROADCAST_DRIVER', 'null'),
+                    'connections' => [
+                        'pusher' => [
+                            'driver' => 'pusher',
+                            'key' => env('PUSHER_APP_KEY'),
+                            'secret' => env('PUSHER_APP_SECRET'),
+                            'app_id' => env('PUSHER_APP_ID'),
+                            'options' => [
+                                'host' => env('PUSHER_HOST', 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusher.com') ?: 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusher.com',
+                                'port' => env('PUSHER_PORT', 443),
+                                'scheme' => env('PUSHER_SCHEME', 'https'),
+                                'encrypted' => true,
+                                'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+                            ],
+                            'client_options' => [
+                                // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
+                            ],
+                        ],
+                        'ably' => [
+                            'driver' => 'ably',
+                            'key' => env('ABLY_KEY'),
+                        ],
+                        'redis' => [
+                            'driver' => 'redis',
+                            'connection' => 'default',
+                        ],
+                        'log' => [
+                            'driver' => 'log',
+                        ],
+                        'null' => [
+                            'driver' => 'null',
+                        ],
+                    ],
+                ];
+
+        + intern-php\config\pusher.php : 
+            <?php
+                return [
+                    'app'     => [
+                        'id'     => env('PUSHER_APP_ID'),
+                        'key'    => env('PUSHER_APP_KEY'),
+                        'secret' => env('PUSHER_APP_SECRET'),
+                    ],
+                    'channel' => 'public',
+                    'event'   => 'chat',
+                ];
+
+        + intern-php\composer.json
+            {
+                "name": "laravel/laravel",
+                "type": "project",
+                "description": "The Laravel Framework.",
+                "keywords": ["framework", "laravel"],
+                "license": "MIT",
+                "require": {
+                    "php": "^8.0.2",
+                    "brian2694/laravel-toastr": "^5.57",
+                    "doctrine/dbal": "^3.6",
+                    "fideloper/proxy": "^4.2",
+                    "fruitcake/laravel-cors": "^2.0.5",
+                    "guzzlehttp/guzzle": "^7.2",
+                    "laravel/framework": "^9.0",
+                    "laravel/sanctum": "^2.14",
+                    "laravel/socialite": "^5.6",
+                    "laravel/tinker": "^2.7",
+                    "pusher/pusher-php-server": "^7.2",
+                    "sentry/sentry-laravel": "3.2.0",
+                    "socialiteproviders/github": "^4.1",
+                    "socialiteproviders/google": "^4.1",
+                    "socialiteproviders/twitter": "^4.1"
+                },
+                "require-dev": {
+                    "barryvdh/laravel-debugbar": "^3.8",
+                    "brainmaestro/composer-git-hooks": "*",
+                    "fakerphp/faker": "^1.9.1",
+                    "laravel/pint": "^1.11",
+                    "laravel/sail": "^1.0.1",
+                    "mockery/mockery": "^1.4.4",
+                    "nunomaduro/collision": "^6.1",
+                    "phpunit/phpunit": "^9.5.10",
+                    "spatie/laravel-ignition": "^1.0"
+                },
+                "autoload": {
+                    "psr-4": {
+                        "App\\": "app/",
+                        "Database\\Factories\\": "database/factories/",
+                        "Database\\Seeders\\": "database/seeders/"
+                    },
+                    "files": [
+                        "app/Helpers/Common.php"
+                    ]
+                },
+                "autoload-dev": {
+                    "psr-4": {
+                        "Tests\\": "tests/"
+                    }
+                },
+                "scripts": {
+                    "post-install-cmd": "vendor/bin/cghooks add --ignore-lock",
+                    "post-autoload-dump": [
+                        "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+                        "@php artisan package:discover --ansi"
+                    ],
+                    "post-update-cmd": [
+                        "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+                        "vendor/bin/cghooks update"
+                    ],
+                    "post-root-package-install": [
+                        "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+                    ],
+                    "post-create-project-cmd": [
+                        "@php artisan key:generate --ansi"
+                    ],
+                    "analyze":  "vendor/bin/pint --test",
+                    "fix-format": "vendor/bin/pint"
+                },
+                "extra": {
+                    "hooks": {
+                        "config": {
+                            "stop-on-failure": [
+                                "pre-commit"
+                            ]
+                        },
+                        "pre-commit": [
+                            "vendor/bin/pint --test"
+                        ]
+                    },
+                    "laravel": {
+                        "dont-discover": []
+                    }
+                },
+                "config": {
+                    "optimize-autoloader": true,
+                    "preferred-install": "dist",
+                    "sort-packages": true,
+                    "allow-plugins": {
+                        "php-http/discovery": true
+                    }
+                },
+                "minimum-stability": "dev",
+                "prefer-stable": true
+            }
+            
+        + intern-php\package.json : 
+            {
+                "private": true,
+                "scripts": {
+                    "dev": "npm run development",
+                    "development": "mix",
+                    "watch": "mix watch",
+                    "watch-poll": "mix watch -- --watch-options-poll=1000",
+                    "hot": "mix watch --hot",
+                    "prod": "npm run production",
+                    "production": "mix --production"
+                },
+                "devDependencies": {
+                    "axios": "^0.25",
+                    "laravel-mix": "^6.0.6",
+                    "lodash": "^4.17.19",
+                    "postcss": "^8.1.14"
+                },
+                "dependencies": {
+                    "font-awesome": "4.7.0",
+                    "bootstrap": "^4.0.0",
+                    "jquery": "^3.7.0"
+                }
+            }
+
+XONG !
+------------------------------------------------------------  
+Để đổ dữ liệu từ controller vào blade trong Laravel để tạo biểu đồ, bạn cần thực hiện các bước sau:
+
+Bước 1: Trong controller của bạn, tính toán dữ liệu mà bạn muốn sử dụng trong biểu đồ và gán chúng vào một biến.
+
+Ví dụ:
+
+$labels = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        $yearlyStats = DB::table('articles')
+            ->select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(*) as count'))
+            ->whereBetween('created_at', [$startDateOfYear, $endDateOfYear])
+            ->groupBy('month')
+            ->get();
+        $monthlyCounts = array_fill_keys($labels, 0);
+        foreach ($yearlyStats as $stat) {
+            $monthName = date("F", mktime(0, 0, 0, $stat->month, 1));
+            $monthlyCounts[$monthName] = $stat->count;
+        }
+        $label_year = 'Statistics on the number of articles by year';
+        // $labels = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        // $labels = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        $data = $monthlyCounts;
+        return view('admin.manage.statistical', ['label_year' => $label_year , 'labels' => $labels, 'data' => $data , 'title' => $this->getTitle('Statistical', 'Statistical Detail')]);
+        
+Bước 2: Trong blade view của bạn (trong trường hợp này là admin.your-blade-view), sử dụng dữ liệu được chuyển từ controller để cung cấp dữ liệu cho biểu đồ.
+
+@extends('admin.layouts.view_content')
+@section('content-blog')
+<link rel="stylesheet" href="{{ asset('admin/css/statistical.css') }}">
+
+<div class="col-12 mx-auto" id="index_statistical">
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @json($labels), // Chuyển mảng labels thành JSON
+                datasets: [{
+                    label: @json($label_year),
+                    data: @json($data), // Chuyển mảng data thành JSON
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+@endsection
+
+Lưu ý rằng trong ví dụ trên, chúng ta đã sử dụng hàm @json để chuyển mảng PHP thành dạng JSON để sử dụng trong biểu đồ. Điều này đảm bảo rằng dữ liệu được truyền đúng định dạng cho biểu đồ Chart.js.
+
+Bây giờ, khi bạn gọi route tương ứng với action index của controller, biểu đồ sẽ hiển thị dựa trên dữ liệu được tính toán từ controller.
+------------------------------------------------------------  
+fix lỗi font-awesome chỉ hiện ở một cửa sổ : <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+------------------------------------------------------------  
+Trong './intern-php/resources/views' Đã replace 
+    'http://localhost:8000/' 
+    
+                bằng 
+
+    \App\Enums\UserEnum::DOMAIN_PATH
+
+Nếu có lỗi gì về hiển thị hình ảnh thì replcae lại thôi . 
+------------------------------------------------------------  
+Trong file : C:\laragon\www\intern-php\app\Enums\UserEnum.php : 
+// public const DOMAIN_PATH = 'http://localhost:8000/';
+public const DOMAIN_PATH = 'http://192.168.11.195:8000/';
+
+=> nếu không chạy ip thì bỏ comment cái trên còn nếu chạy ip thì để cái dưới và check xem ip 
+ipconfig và chọn : IPv4 Address. . . . . . . . . . . : 192.168.11.195
+
+
+Nếu chạy bằng ip thì tắt reCapTcha đi , đăng nhập bằng google cũng không được vì nó được đăng kí trên Google API 
+là localhost chứ không phải là ip hay cái gì cả 
+Chính vì thế muốn đăng nhập bằng google thì không chạy bằng ip , trong file service ta cũng không được đổi lại thành : 
+
+'google' => [
+    'client_id' => '1079359168744-ehm0qmfgmg4imvbk33n7d97t69sfjb87.apps.googleusercontent.com',
+    'client_secret' => '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',
+    'redirect' => UserEnum::DOMAIN_PATH . 'authorized/google/callback',
+],
+'github' => [
+    'client_id' => 'b1b1f3e7c5765cfd3510',
+    'client_secret' => '48474a596ae636bba226c9b0f704221f2fcc3bb7',
+    'redirect' => UserEnum::DOMAIN_PATH . 'authorized/github/callback',
+],
+=> Vì như đã nói , nó sẽ khác với cái url đã đăng kí trên API . 
+------------------------------------------------------------  
++ Chiều dài scroll của các khung chat là khác nhau => hoặc là cho cuộn xuống rất lớn 999999 => xem như mất đi animation 
+=> hoặc là cho cuộn theo chiều dài của khung chat => nhưng sẽ có lúc lỗi và lúc không lỗi (giật scroll) . 
+=> tốt nhất chỉ cho animation lúc vừa mới vào khung chat 
+------------------------------------------------------------  
+Giả sử ta có : http://localhost:8000/main/personal-page/1 (file personal_page.blade.php)
+    + Nếu ta ghi 
+        <a href="chat/user/{{$personal->id}}">
+            <span><i class="fa-brands fa-facebook-messenger"></i></span>
+            Text Me
+        </a>
+        => thì nó sẽ cộng dồn url trên trang web và chat/user/{{$personal->id}} 
+        thành : http://localhost:8000/main/personal-page/chat/user/1
+
+    + Nếu ta ghi 
+        <a href="/chat/user/{{$personal->id}}">
+            <span><i class="fa-brands fa-facebook-messenger"></i></span>
+            Text Me
+        </a>
+        => sẽ thành : http://localhost:8000/chat/user/1
+
+    => cái nào cũng dùng được , tùy trường hợp mà nên dùng cái nào 
+    => ví dụ đang ở .../user 
+    => thì href ta chỉ cần để href="1" => là nó tự chuyển đến .../user/1 
+------------------------------------------------------------  
+[Buổi sau thứ 3 => VIẾT NỘI DUNG CẦN THUYẾT TRÌNH TRƯỚC KHI TRÌNH BÀY cho nó đầy đủ]
+
+Task làm thêm : 
+    + Thêm ẩn hiện comment 
+    + Thêm ẩn hiện bài viết 
+
++ Thêm Caching và fix lỗi paginate không hoạt động của nó . 
++ Xem tối ưu code Service được không => sử dụng các hàm trong file BaseService 
++ Clone dashboard 
++ Thêm facebook comment plugins 
+
+----------------------------------------------------------------------------------
++ Viết api 
+    + JSON Product  
++ Xem thêm reatime database => lưu các thông báo trên data của thư viện chứ không phải là lưu trong database của mình 
+----------------------------------------------------------------------------------
+git config --list
+
+----------------------------------------------------------------------------------
+Như này là khai báo một array 
+    $input = [
+        'search' => $request->search,
+        'role' => $request->role,
+        'per_page' => $request->per_page,
+    ];
+
+Còn dưới đây là chuyển một array sang object 
+    $input = (object) [
+        'search' => $request->search,
+        'role' => $request->role,
+        'per_page' => $request->per_page,
+    ];
+
+----------------------------------------------------------------------------------
+Với Laravel thì chỉ cần gửi param ?page=1 vào request thì nó tự động hiểu được ta cần đến page nào . 
+
+----------------------------------------------------------------------------------
+Đổi tên nhánh : Ở cả local và origin (gitlab)
+
+C:\laragon\www\intern-php(tasks/ManhNV/Laravel-learning -> origin)   <= đang ở nhánh cũ 
+λ git branch -m tasks/ManhNV/Laravel-Project-Final <= tên nhánh mới 
+
+C:\laragon\www\intern-php(tasks/ManhNV/Laravel-Project-Final -> origin)
+λ git push origin tasks/ManhNV/Laravel-Project-Final <= push lên tên nhánh mới để tạo nhánh mới trên origin 
+
+=> Xong 
+=> Việc này nó sẽ tạo ra một nhánh mới trên origin => ta sẽ lên đó để tạo merge request mới 
+=> Điều đặc biệt là nó sẽ giữ lại toàn bộ lịch sử bao gồm các commit,... cho ta trên gitlab 
+
+-----------------------------------------------------------------------------------------------------
+Docker
++ docker pull mysql:8.0
++ C:\Users\ADMIN>docker images
+    REPOSITORY                                 TAG       IMAGE ID       CREATED        SIZE
+    mysql                                      8.0       8ca55c632ed6   22 hours ago   577MB
+    ambassador/telepresence-docker-extension   1.0.9     829a500cb0ad   3 months ago   531MB
+    ambassador/telepresence-docker-runtime     1.0.9     3a0d378b0ab9   3 months ago   21.3MB
+    lpp_mspstatusweb                           latest    f8cbba052348   3 months ago   1.98GB
+    hello-world                                latest    9c7a54a9a43c   4 months ago   13.3kB
+    nginx/docker-extension                     0.0.3     41d3d0d7d940   5 months ago   7.53MB
+    lpp_mspstatusdb                            latest    15b7cc87bdc3   5 months ago   455MB
+    nginx                                      latest    3f8a00f137a0   7 months ago   142MB
+    mysql                                      5.7       be16cf2d832a   7 months ago   455MB
+    docker/getting-started                     latest    3e4394f6b72f   8 months ago   47MB
+    node                                       9.5.0     75a1d3c86544   5 years ago    676MB
+
++ docker run -d -p 3309:3306 -e MYSQL_ROOT_PASSWORD=vanmanhit1 8ca55c632ed6
+a55e5b51dd1307aa6810a6ca0d235d11d76783d56ec24078deac37acb3950697  <= nó hiện ra một chuỗi như này là ok 
+
+=> Connect với để thao tác với Mysql của Docker (Connect bằng 'Mysql của Vscode' hoặc 'HeidiSQL' hoặc 'SQL workbench' ,... hoặc bất kì cái gì cũng được)
+    + port : 3309 
+    + password : vanmanhit1 
+    + hostname/IP : 127.0.0.1 
+
+=> Sau khi đã connect xong thì vào tạo database và dùng bình thường thôi 
+
+-----------------------------------------------------------------------------------------------------
+
+var token = 'eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiIyNy8yMzA5MDExMjIyOSIsIkhhc0ZlZGVyYXRlZFVzZXIiOmZhbHNlfQ%3D%3D'
+call = `Bear ${token}` => giống như sử dụng nháy kép bên php  
+
+-----------------------------------------------------------------------------------------------------

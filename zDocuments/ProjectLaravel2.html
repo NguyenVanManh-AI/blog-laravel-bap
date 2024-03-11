@@ -1,0 +1,1204 @@
+
+
+----------------------------------------------------------------------------------------------------------------------
++ Project Laravel có MVC chung trong 1 project (Không phải là Project API chỉ có MC) phải hiểu các vấn đề sau 
+    + Model,View,Controller <=> Database 
+    + router (web.php tương tự với code API thì có api.php)
+    + eloquent trong laravel (nằm ở Controller)
+    + hiểu được cách truyền dữ liệu, các kiểu dữ liệu từ controller về view để thao tác sau đó từ view lại làm gì đó 
+        rồi trả về đâu đó rồi ghi vào database 
+    + ngoài ra còn có các kiến thức khác trong file ghi chép . 
+
+
+----------------------------------------------------------------------------------------------------------------------
++ Những điều khiển Blade template (.blade.php) 
+    @yield: Định nghĩa một vùng được sử dụng để tạo nội dung được đưa vào từ các file Blade khác.
+        + file cha dùng thẻ này 
+    @extends: Được sử dụng để kế thừa các template khác và định nghĩa template cha cho trang web hiện tại.
+        + các file khác khi dùng thẻ này thì nội dung của file con này sẽ được bỏ vào vị trí thẻ @yield nằm trong file 
+        mà file con kế thừa . 
+
+    @section: Được sử dụng để định nghĩa các phần nội dung của template, các phần này có thể được định nghĩa ở template cha và được ghi đè ở các template con.
+    @if và @endif: Được sử dụng để điều khiển luồng điều khiển của chương trình, nếu điều kiện được cung cấp trong câu lệnh @if đúng thì các câu lệnh nằm trong khối điều kiện sẽ được thực hiện.
+    @foreach: Được sử dụng để lặp qua một mảng hoặc một bộ sưu tập (collection) trong Laravel, lặp lại các câu lệnh cho mỗi phần tử của mảng hoặc bộ sưu tập đó.
+    @include: Cho phép bạn bao gồm một file Blade khác vào trong file Blade hiện tại.
+    
+    @show: Kết thúc một phần và hiển thị nội dung của phần đó.
+    @isset: Kiểm tra xem một biến có tồn tại hay không.
+    @empty: Kiểm tra xem một biến có rỗng hay không.
+    @switch: Xử lý một số trường hợp khác nhau dựa trên giá trị của biến.
+    @case: Định nghĩa một trường hợp trong điều khiển @switch.
+    @default: Định nghĩa trường hợp mặc định trong điều khiển @switch.
+    @break: Kết thúc một trường hợp trong điều khiển @switch.
+    @continue: Bỏ qua các lệnh trong một vòng lặp và chuyển đến vòng lặp tiếp theo.
+    @forelse: Tương tự như @foreach, nhưng sẽ hiển thị một phần tử trong trường hợp danh sách hoặc mảng là rỗng. Ví dụ: @forelse($users as $user). @empty sẽ được gọi nếu không có mục nào.
+
+    @while: Được sử dụng để lặp lại các câu lệnh trong khi một điều kiện cụ thể đúng. Ví dụ: @while($count < 5).
+    @push: Cho phép bạn đẩy nội dung vào một khoảng được định nghĩa trước. Điều này rất hữu ích để chèn các phần tử vào khối đầu của trang hoặc chèn các phần tử CSS và JavaScript vào đầu hoặc cuối của trang. Ví dụ: @push('scripts')<script src="script.js"></script>@endpush.
+    @stack: Cho phép bạn định nghĩa một khoảng và các phần tử có thể được đẩy vào trong khoảng đó từ các template khác. Điều này giúp bạn quản lý các phần tử CSS và JavaScript, hoặc các phần tử khác trong một file template.
+    @prepend: Giống như @push, nhưng sẽ đẩy phần tử vào đầu của khoảng thay vì cuối. Ví dụ: @prepend('scripts')<script src="script.js"></script>@endprepend.
+    @auth: Kiểm tra xem người dùng đã đăng nhập chưa. Nếu người dùng đã đăng nhập, các câu lệnh nằm trong @auth sẽ được thực hiện. Ví dụ: @auth @endauth.
+    @guest: Ngược lại với @auth, kiểm tra xem người dùng có phải là khách hàng chưa đăng nhập không. Nếu đúng, các câu lệnh trong @guest sẽ được thực hiện. Ví dụ: @guest @endguest.
+    @can: Kiểm tra xem người dùng có quyền truy cập vào một hành động hoặc tài nguyên cụ thể hay không. Ví dụ: @can('edit', $post) @endcan.
+    @cannot: Ngược lại với @can, kiểm tra xem người dùng không có quyền truy cập vào một hành động hoặc tài nguyên cụ thể hay không. Ví dụ: @cannot('edit', $post) @endcannot.
+    @lang: Cho phép bạn dịch một chuỗi văn bản sang ngôn ngữ khác. Ví dụ
+
+
+----------------------------------------------------------------------------------------------------------------------
+Route web.php 
+    get(): Phương thức này được sử dụng để đăng ký một tuyến đường HTTP GET với ứng dụng web. Nó nhận hai tham số: URI và một hàm hoặc một hành động (action) để xử lý yêu cầu đến. Ví dụ:
+                Route::get('/users', function () {
+                    // Xử lý yêu cầu đến trang danh sách người dùng
+                    return view('users.index');
+                });
+    view(): Phương thức này được sử dụng để trả về một trang HTML khi người dùng truy cập vào một đường dẫn cụ thể. Nó nhận hai tham số: URI và tên của tệp blade (hoặc một tên đầy đủ cho tệp view). Ví dụ:
+                Route::view('/welcome', 'welcome');
+    resource(): Phương thức này được sử dụng để đăng ký một tập hợp các tuyến đường cho một tài nguyên RESTful. Nó tạo ra các tuyến đường cho các hành động chung như hiển thị danh sách tài nguyên, hiển thị biểu mẫu tạo tài nguyên mới, xử lý biểu mẫu tạo tài nguyên mới, hiển thị tài nguyên cụ thể, cập nhật tài nguyên cụ thể và xóa tài nguyên cụ thể. Ví dụ:
+                Route::resource('photos', PhotoController::class);
+
+                Trong file web.php của Laravel, ngoài các phương thức get(), view() và resource(), còn có một số phương thức khác mà bạn có thể sử dụng, bao gồm:
+    post(): Phương thức này được sử dụng để xử lý dữ liệu được gửi đến từ một biểu mẫu HTML bằng phương thức POST. Ví dụ: Route::post('/user', [UserController::class, 'store']);
+    put(): Phương thức này được sử dụng để cập nhật một tài nguyên đã tồn tại bằng phương thức PUT. Ví dụ: Route::put('/user/{id}', [UserController::class, 'update']);
+    delete(): Phương thức này được sử dụng để xóa một tài nguyên bằng phương thức DELETE. Ví dụ: Route::delete('/user/{id}', [UserController::class, 'destroy']);
+    any(): Phương thức này cho phép bạn đăng ký một đường dẫn với mọi phương thức HTTP. Ví dụ: Route::any('/user', [UserController::class, 'index']);
+    match(): Phương thức này cho phép bạn đăng ký một đường dẫn với nhiều phương thức HTTP. Ví dụ: Route::match(['get', 'post'], '/user', [UserController::class, 'index']);
+    redirect(): Phương thức này cho phép bạn đăng ký một đường dẫn chuyển hướng đến một trang khác. Ví dụ: Route::redirect('/here', '/there');
+    fallback(): Phương thức này cho phép bạn đăng ký một đường dẫn dự phòng cho tất cả các đường dẫn không được khai báo trước đó. Ví dụ: Route::fallback(function () { return view('errors.404'); });
+    middleware(): Phương thức này được sử dụng để áp dụng các middleware cho một tuyến đường. Ví dụ: Route::get('/user', [UserController::class, 'index'])->middleware('auth');
+    name(): Phương thức này được sử dụng để đặt tên cho một tuyến đường. Ví dụ: Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    domain(): Phương thức này được sử dụng để đăng ký một tuyến đường cho một tên miền cụ thể. Ví dụ: Route::domain('{account}.myapp.com')->group(function () { // ... });
+
+    Trong Blade của Laravel, @csrf và @method là 2 directive thường được sử dụng trong các form để bảo vệ ứng dụng khỏi các cuộc tấn công Cross-Site Request Forgery (CSRF).
+    @csrf tạo ra một trường ẩn chứa mã CSRF token để đảm bảo rằng form được submit từ ứng dụng Laravel. Mã token này được sinh tự động và được lưu trữ trong session. Khi form được submit, mã token này sẽ được gửi kèm theo để xác thực rằng request này được gửi từ cùng một ứng dụng Laravel.
+        + Nếu không có sẽ xuất hiện lỗi : 419 PAGE EXPIRED => Trang đã hết hạn 
+            <form action="{{ route('products.store') }}" method="POST">
+                @csrf
+
+                <!-- others code  -->
+
+            </form>
+        
+        + @csrf (Cross-Site Request Forgery) là một directive trong Laravel để tạo ra một trường ẩn trong form HTML, giúp ngăn chặn tấn công CSRF.
+            Vì vậy, @csrf luôn phải được đặt bên trong thẻ form, chính xác là đặt trước tất cả các trường input, select và textarea khác trong form như sau:
+
+    @method cho phép form được submit với HTTP method khác với method mặc định của form là POST. Nó tạo ra một trường ẩn chứa giá trị method khác và Laravel sẽ sử dụng giá trị này để xử lý request thay vì sử dụng method mặc định của form. Các method được hỗ trợ bao gồm: PUT, PATCH, DELETE.
+
+----------------------------------------------------------------------------------------------------------------------
+
+Để thêm một đoạn css hoặc js vào file Blade phải dùng @push đúng không 
+    Đúng, để thêm một đoạn CSS hoặc JS vào một tệp Blade, bạn có thể sử dụng các lệnh @push và @stack của Laravel.
+    Ví dụ, để thêm một đoạn CSS vào tiêu đề trang của tệp Blade, bạn có thể sử dụng lệnh @push như sau:
+        @push('styles')
+            <style>
+                /* Your custom styles here */
+            </style>
+        @endpush
+    
+    Tương tự, để thêm một đoạn JS vào cuối thẻ <body> của tệp Blade, bạn có thể sử dụng lệnh @push như sau:
+        @push('scripts')
+            <script>
+                /* Your custom JavaScript here */
+            </script>
+        @endpush
+
+    Sau đó, để đưa các đoạn CSS và JS này vào các trang hiển thị, bạn cần sử dụng lệnh @stack trong các tệp giao diện (layout file) của bạn, ví dụ như sau:
+        <!-- In your layout file -->
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>@yield('title')</title>
+                @stack('styles')
+            </head>
+            <body>
+                @yield('content')
+                @stack('scripts')
+            </body>
+        </html>
+        Lệnh @stack sẽ đưa nội dung được đưa vào bởi lệnh @push vào các địa điểm tương ứng trong các tệp giao diện. Ví dụ, các đoạn CSS sẽ được đưa vào giữa các thẻ <head> và </head>, và các đoạn JS sẽ được đưa vào giữa các thẻ <body> và </body>.
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Sau khi đặt tên cho một tuyến đường bằng phương thức name trong file web.php của Laravel như trong ví dụ của bạn:
+    Route::put('/items/{id}', 'ItemController@update')->name('update_items');
+        Bạn có thể gọi tên của tuyến đường này từ bất kỳ nơi nào trong ứng dụng của bạn bằng cách sử dụng hàm route hoặc url trong Laravel.
+    
+    Ví dụ, để tạo một liên kết đến tuyến đường này trong tệp Blade của bạn, bạn có thể sử dụng hàm route như sau:
+        <a href="{{ route('update_items', ['id' => $item->id]) }}">Update Item</a>
+        Trong đó, update_items là tên được đặt cho tuyến đường trong file web.php, và ['id' => $item->id] là một mảng chứa các tham số động cần được truyền cho tuyến đường (trong trường hợp này là tham số {id}).
+
+    Ngoài ra, bạn cũng có thể sử dụng hàm url để lấy URL tuyến đường:
+        $url = url('items/' . $item->id);
+    Tuy nhiên, hàm url trả về một URL đầy đủ, trong khi route trả về một URL tương đối với tên tuyến đường.
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Các thể loại return trong file Controller     
+    + return redirect() : trong Laravel là một cách để chuyển hướng người dùng từ một trang web này sang trang web khác. Nó được sử dụng thường xuyên trong các ứng dụng web để đưa người dùng đến trang kết quả hoặc trang tiếp theo sau khi họ đã hoàn thành một hành động nào đó trên trang hiện tại.
+        Ví dụ, bạn có thể sử dụng return redirect()->route('home') trong controller để chuyển hướng người dùng đến trang chủ của ứng dụng. Đây là cách để giúp người dùng di chuyển giữa các trang một cách dễ dàng và thuận tiện hơn.
+        Ngoài ra, return redirect() cũng có thể được sử dụng để chuyển hướng người dùng đến một trang tạm thời (trang 302), hoặc đến một trang lỗi (trang 404) nếu trang yêu cầu không tồn tại.
+
+        Một ví dụ cụ thể:
+
+        php
+        Copy code
+        public function store(Request $request)
+        {
+            // Xử lý các dữ liệu đầu vào và lưu vào cơ sở dữ liệu
+            $newPost = new Post();
+            $newPost->title = $request->input('title');
+            $newPost->content = $request->input('content');
+            $newPost->save();
+
+            // Chuyển hướng người dùng đến trang danh sách bài viết
+            return redirect()->route('posts.index');
+        }
+        Trong ví dụ này, khi người dùng tạo mới một bài viết thành công, họ sẽ được chuyển hướng đến trang danh sách các bài viết bằng return redirect()->route('posts.index').
+        Trong Laravel, return được sử dụng để trả về kết quả của một hàm, phương thức hoặc một route. Bên cạnh return redirect(), còn có một số trường hợp khác mà ta có thể sử dụng return, ví dụ:
+
+    + return view('tên_view'): để trả về một file view trong Laravel.
+    + return response(): để trả về một đối tượng response, bao gồm các thông tin như header, status code, content type và body.
+    + return back(): để quay trở lại trang trước đó.
+    + return abort(404): để trả về lỗi 404 Not Found.
+    + return json($data): để trả về một đối tượng JSON.
+    + return $next($request): được sử dụng trong middleware để chuyển tiếp request tới middleware hoặc controller tiếp theo.
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Luồng đi 
+    + web.php 
+        Route::get('/products/abc', [ProductController::class,'abc'])->name('products.abc'); 
+        Route::get('/products/abc333', [ProductController::class,'abc222'])->name('products.abc111'); (2)
+
+    + index.blade.php 
+        <a class="btn btn-success" href="{{ route('products.abc') }}"> ABC</a> (1)
+    
+    + abc333.blade.php 
+        <H1>ABC 3333</H1>
+
+    + ProductController
+        public function abc()
+        {
+            // return view('products.abc');
+            return redirect()->route('products.abc111');
+        }
+
+        public function abc222()
+        {
+            return view('products.abc333');
+            // return route('products.abc');
+        }
+        
+    
+
+    1. Tại file index.blade.php có button ABC => click vào đó sẽ được chuyển đến : route('products.abc')
+        => sẽ thực hiện hàm abc nằm trong class ProductController . Nếu hàm có code như sau : 
+            public function abc()
+            {
+                return view('products.abc');
+            }
+            => thì nó sẽ trả về file products/abc.blade.php và sẽ có được dẫn tương ứng như trên route đã ghi là : /products/abc
+        
+        => Nếu là : 
+            public function abc()
+            {
+                return redirect()->route('products.abc111');
+            }
+        => thì nó sẽ chuyển hướng đến route('products.abc111') . CHÚ Ý là phải có redirect() . 
+            Nếu không thì nó sẽ return ra : http://127.0.0.1:8000/products/abc333 là đường dẫn của route('products.abc111') .
+    
+    2. Như trên : route('products.abc111') sẽ gọi hàm abc222 trong class ProductController
+        hàm abc222  được thực hiện thì return view('products.abc333'); => trả về file view . 
+        file products/abc333.blade.php 
+
+    
+    => Nếu trong controller nếu là return view('products.abc333'); thì trả về trực tiếp một file view 
+        Nếu là return redirect()->route('products.abc111'); thì chuyển tiếp đến route để thực hiện hàm . 
+
+        
+----------------------------------------------------------------------------------------------------------------------
+VÍ DỤ : 
+        @extends('products.layout')
+        
+        @section('content')
+        <div class="row">
+            <div class="col-lg-12 margin-tb">
+                <div class="pull-left">
+                    <h2>Add New Product</h2>
+                </div>
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="{{ route('products.index') }}"> Back</a>
+                </div>
+            </div>
+        </div>
+        
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        
+        <!-- B1 : Route::post('/products', [ProductController::class,'store'])->name('products.store222'); // hàm tạo  -->
+        <form action="{{ route('products.store222') }}" method="POST"> <!-- B2 : action là POST đến route có name là ntn -->
+        <!-- products.store222 là name mà mình đã đặt trong file web.php -->
+        <!-- sau khi tìm đến name rồi thì nó tìm đến hàm store nằm trong class ProductController và thực hiện -->
+
+        <!-- public function store(Request $request)
+        {
+            $request->validate([
+                'name' => 'required',
+                'detail' => 'required',
+            ]);
+            
+
+            Product::create($request->all());
+
+            return redirect()->route('products.index')
+                            ->with('success','Product created successfully.');
+        } -->
+
+        <!-- name và detail chính là được lấy giá trị từ input có name="name" và textarea có name="detail" -->
+        <!-- sau đó create  -->
+        <!-- tiếp đến redirect() đến route có name là route('products.index') với message là 'success' = 'Product created successfully.' -->
+
+
+
+        <!-- Route::get('/products', [ProductController::class,'index'])->name('products.index'); // xem list product  -->
+        <!-- đến route('products.index') thì gọi hàm index trong class ProductController -->
+
+        <!-- public function index()
+            {
+                $products = Product::latest()->paginate(5);
+        
+                return view('products.index',compact('products'))
+                    ->with('i', (request()->input('page', 1) - 1) * 5);
+            }
+            -->
+
+        <!-- view('products.index') nghĩa là trả về file Blade views/products/index.blade.php  -->
+
+        <!-- Trong file index.blade.php có đoạn code : 
+            @if ($message = Session::get('success'))
+                <div class="alert alert-success">
+                    <p>{{ $message }}</p>
+                </div>
+            @endif
+
+            @csrf
+
+        => nghĩa là nếu có message là 'success' = 'Product created successfully.' thì sẽ hiển thị {{ $message }} đó ra  -->
+        <!-- Nghĩa là khi ta truy cập trực tiếp vào index.blade.php thông qua http://127.0.0.1:8000/products thì không có success ấy thì nó
+        sẽ không hiển thị ra . -->
+        <!-- Nhưng khi ta thực hiện create xong rồi được chuyển về index.blade.php khi này có biến success trong Session thì nó sẽ được hiển thị 
+        ra -->
+            @csrf
+        
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12">
+                    <div class="form-group">
+                        <strong>Name:</strong>
+                        <input type="text" name="name" class="form-control" placeholder="Name">
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12">
+                    <div class="form-group">
+                        <strong>Detail:</strong>
+                        <textarea class="form-control" style="height:150px" name="detail" placeholder="Detail"></textarea>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        
+        </form>
+        @endsection
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+public function abc222(){
+    return view('products.abc333');
+}
+
+Route::get('/products/abc333', [ProductController::class,'abc222'])->name('products.abc111'); // test 
+
+    => get('/products/abc333' và [ProductController::class,'abc222'] và name('products.abc111')
+    có quan hệ mật thiết với nhau . 
+
+    1. Khi ta truy cập từ trình duyệt : http://127.0.0.1:8000/products/abc333 
+        => thì nó sẽ gọi đến hàm abc222 nằm trong class ProductController và thực hiện . 
+        Hàm abc222 yêu cầu thực hiện cái gì thì nó thực hiện : 
+            public function abc222(){
+                return view('products.abc333');
+            }
+            => ví dụ đây thì là trả về nội dung file abc333.blade.php 
+
+    2. Khi ta truy cập 
+        Trong file Controller : return redirect()->route('products.abc111');
+        Hoặc trong file view .blade.php : <a class="btn btn-success" href="{{ route('products.abc111') }}"> ABC111</a>
+        => thì nó sẽ gọi đến hàm abc222 nằm trong class ProductController và thực hiện . 
+        và sẽ cho địa chỉ tương ứng là : '/products/abc333' . Đầy đủ là : http://127.0.0.1:8000/products/abc333 
+
+
+    
+    Ngoài ra : Luồng đi của Update (hoặc tương tự) sẽ là : 
+        1. Biến products được truyền đến file và được foreach ra thành các biến product 
+        2. Khi click vào update thì product->id được truyền đi kèm với route 
+        3. Trong route sẽ gọi hàm tương ứng
+        4. hàm sẽ lấy biến id ra sau đó truy vấn và lấy thông tin rồi hiển thị ra file view nào đó là một form để update . 
+        5. Sau khi người dùng update thông thông tin trên form => nhấn update thì tiếp tục thông tin của Product có $id đó 
+            tiếp tục được gửi đi đến một route 
+        6. Trong route lại tiếp tục gọi hàm tương ứng và thao tác với dữ liệu để thực hiện update . 
+            Ở bước 4 là hàm lấy thông tin để view ra một file view 
+            Ở bước 6 là thực hiện update rồi trở về một file view nào đó 
+
+    Ví dụ : 
+        index.blade.php : 
+                @foreach ($products as $product)                    ///// (1)
+                <tr>
+                    <td>{{ ++$i }}</td>
+                    <td>{{ $product->name }}</td>
+                    <td>{{ $product->detail }}</td>
+                    <td>
+                        <form action="{{ route('products.destroy',$product->id) }}" method="POST">
+        
+                            <a class="btn btn-info" href="{{ route('products.show',$product->id) }}">Show</a>
+            
+                            <a class="btn btn-primary" href="{{ route('products.edit',$product->id) }}">Edit</a> ///// (2)
+        
+                            @csrf
+                            @method('DELETE')
+            
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+
+            
+        Route::get('/products/{id}/edit', [ProductController::class,'edit'])->name('products.edit');  ///// (3)
+
+        Hàm edit của ProductController : ///// (4)
+                public function edit(Request $request, $id)
+                {
+                    $product = Product::find($id);
+                    return view('products.edit',compact('product'));
+                }
+                => truyền biến 'product' về cho file  products/edit.bladde.php để hiển thị các thông tin ra 
+                => trong .blade.php giống với vuejs là dấu {{ }} để để hiển thị giá trị của một biến chung giữa code html 
+
+        
+        Bước 5 : Khi nhấn submit thì truyền thông tin name,detail trong các thẻ input và textarea vào với phương thức PUT 
+            đồng thời đi theo route thì truyền thêm biến $product->id
+                <form action="{{ route('products.update',$product->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+               
+                     <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="form-group">
+                                <strong>Name:</strong>
+                                <input type="text" name="name" value="{{ $product->name }}" class="form-control" placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="form-group">
+                                <strong>Detail:</strong>
+                                <textarea class="form-control" style="height:150px" name="detail" placeholder="Detail">{{ $product->detail }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+                          <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
+
+
+        Route::put('/products/{id}', [ProductController::class,'update'])->name('products.update'); ///// (6)
+        Hàm update : giá trị $product->id khi action="{{ route('products.update',$product->id) }}" sẽ được truyền vào $id 
+            và trong dòng  Route::put('/products/{id}'... cũng được truyền vào {id}
+
+                public function update(Request $request,$id)
+                {
+                    $product = Product::find($id);
+                    $request->validate([
+                        'name' => 'required',
+                        'detail' => 'required',
+                    ]);
+            
+                    $product->update($request->all());
+            
+                    return redirect()->route('products.index')
+                                    ->with('success','Product updated successfully');
+                }
+
+                => thực hiện update 
+                => sau khi thực hiện thành công thì trở về file products/index.blade.php và kèm theo biến 
+                    'success','Product updated successfully' => biến success này nằm trong Session 
+                    ta có thể lấy nó ra : 
+                        @if ($message = Session::get('success'))
+                            <div class="alert alert-success">
+                                <p>{{ $message }}</p>
+                            </div>
+                        @endif
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+    Truyền một tham số : 
+        Dòng 1 : <form action="{{ route('products.update',$product->id) }}" method="POST"> 
+        Dòng 2 : Route::put('/products/{id}', [ProductController::class,'update'])->name('products.update');
+        Dòng 3 : public function update(Request $request,$id){}
+        
+        Đúng. Biến $product->id sẽ được truyền vào trong {id} ở đường dẫn '/products/{id}' trong route 
+        và sau đó được truyền vào tham số $id của hàm update(Request $request,$id) trong controller. 
+        Các tham số trong hàm controller phải trùng với các tham số trong route để Laravel có thể ánh xạ các giá trị được truyền vào.
+
+    Truyền nhiều tham số : 
+        web.php : Route::put('/products/{id}/comments/{comment_id}', [ProductController::class,'updateComment'])->name('products.update_comment');
+        ProductController.php : public function updateComment(Request $request, $id, $comment_id) {// code}
+        
+        Ví dụ khác : 
+            <form action="{{ route('products.update', ['id' => $product->id, 'name' => $product->name]) }}" method="POST">
+            Route::put('/products/{id}/{name}', [ProductController::class,'update'])->name('products.update');
+            public function update(Request $request, $id, $name) {
+                // Sử dụng $id và $name để cập nhật sản phẩm
+            }
+
+            
+    CHÚ Ý : 
+        Route::get('/products/abc333', [ProductController::class,'abc222'])->name('products.abc111'); // test 
+        Route::get('/products/abc333', [ProductController::class,'abc222'])->name('productsabc111'); // vẫn được 
+
+        => Ở name thì products.abc111 hay productsabc111 hoàn toàn được . Nó chỉ là cái tên nên 
+        ta thêm dấu chấm '.' chẳng qua là để cho dễ nhìn và khi đặt name cho các route khác nhìn nó gọn gàng thôi . 
+        Nếu là : productsabc111 thì 
+            public function abc()
+            {
+                return redirect()->route('productsabc111');
+            }
+        
+        Và : <a class="btn btn-success" href="{{ route('productsabc111') }}"> ABC</a>
+        => chỉ là thay đổi các tên thôi . Không có gì cả . 
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+{!! $products->links() !!} được sử dụng trong Laravel để tạo ra một liên kết phân trang đơn giản cho các bản ghi được trả về trong biến $products.
+    Đây là phương thức đơn giản để tạo các nút phân trang và liên kết cho việc điều hướng giữa các trang khác nhau của một danh sách bản ghi. Biến $products phải là một đối tượng phân trang trả về từ hàm paginate() hoặc simplePaginate() trong Laravel.
+    {!! !!} được sử dụng trong Laravel để output mã HTML từ một biến mà không bị mã hóa lại, nghĩa là mã HTML được chèn trực tiếp vào trang web và sẽ được hiển thị mà không cần phải decode.
+
+    Sử dụng simplePaginate:
+        $products = Product::simplePaginate(5);
+        Trong file Blade, chúng ta có thể sử dụng links method để hiển thị các liên kết phân trang:
+        {!! $products->links() !!}
+   
+    Sử dụng paginate:
+        $products = Product::paginate(5);
+        Sử dụng render:
+        {!! $products->render() !!}
+
+----------------------------------------------------------------------------------------------------------------------
+Giải thích hàm index() :
+    public function index()
+    {
+        $products = Product::latest()->paginate(5);
+
+        return view('products.index',compact('products'))
+            ->with('i', (request()->input('page', 1) - 1) * 5);
+    }
+
+
+    Hàm index() trong ProductController có chức năng lấy danh sách sản phẩm từ cơ sở dữ liệu và trả về view hiển thị danh sách sản phẩm đó. Cụ thể:
+    Product::latest()->paginate(5) lấy danh sách sản phẩm mới nhất sắp xếp theo thứ tự giảm dần của cột created_at, và phân trang với mỗi trang hiển thị tối đa 5 sản phẩm.
+    view('products.index', compact('products')) trả về view có tên là index trong thư mục products (tức là file index.blade.php 
+    trong thư mục resources/views/products), và truyền biến $products (danh sách sản phẩm lấy được) cho view này thông qua hàm compact.
+    with('i', (request()->input('page', 1) - 1) * 5) truyền thêm một biến $i cho view, có giá trị là số thứ tự sản phẩm đầu tiên của trang hiện tại trừ đi 1, nhân với số lượng sản phẩm trên mỗi trang. 
+    Biến $i này thường được dùng để hiển thị số thứ tự của các sản phẩm trong danh sách.
+    Sau khi thực hiện các thao tác trên, hàm trả về view để hiển thị danh sách sản phẩm.
+
+
+----------------------------------------------------------------------------------------------------------------------
+Truyền biến 
+            public function index()
+            {
+                $products = Product::latest()->paginate(5);
+
+                $vanmanh = "Nguyễn Văn Mạnh";
+                return view('products.index',compact('products','vanmanh'))      ===> truyền nhiều biến 
+                    ->with('i', (request()->input('page', 1) - 1) * 5);
+            }
+
+            <h1>{{$vanmanh}}</h1>  ===> lấy biến ra 
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Chú ý : 
+    file cha : layout.blade.php  
+        <!-- others code -->
+            @yield('content222')        ===> code của file index.blade.php sẽ được bỏ vào đây 
+        <!-- others code -->
+
+
+    file con : index.blade.php 
+        @extends('products.layout')     ===> kế thừa file views/products/layout.blade.php
+        
+        @section('content222')
+            <!-- others code in file -->
+        @endsection
+
+    => @yield('content222') thì @section('content222') . Nghĩa là phải cùng : content222
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+@method trong file Blade 
+
+    <form action="{{ route('products.destroy',$product->id) }}" method="POST">
+        <a class="btn btn-info" href="{{ route('products.show',$product->id) }}">Show</a>
+
+        <a class="btn btn-primary" href="{{ route('products.edit',$product->id) }}">Edit</a>
+
+        @csrf
+        @method('DELETE')
+
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+
+    => thay vì khi submit thì POST ta sẽ thành DELETE 
+    => thực ra ở đây POST cũng được => vì action đến {{ route('products.destroy',$product->id) }}
+    đến route đó và truyền vào giá trị $product->id
+
+    Ta có : 
+        Route::delete('/products/{id}', [ProductController::class,'destroy'])->name('products.destroy'); // hàm xóa 
+        => $product->id sẽ được truyền vào {id} 
+
+        Hàm destroy : 
+            public function destroy(Request $request,$id_pr)
+            {
+                $product = Product::find($id_pr);
+                $product->delete();
+                return redirect()->route('products.index')
+                                ->with('success','Product deleted successfully');
+            }
+
+    Thực ra ta thay Delete bằng POST cũng được . Bỏ đi @method('DELETE') thì trong route sẽ là POST 
+    Route::post('/products/{id}', [ProductController::class,'destroy'])->name('products.destroy'); // hàm xóa 
+
+
+    Delete cũng được dùng với một số trường hợp bắt buộc (hình như là có nói trong PBL4 rồi) . 
+    Hoặc được dùng với lệnh xóa ngắn gọn . 
+
+            public function destroy(Request $request,$id_pr)
+            { 
+                // return $id_pr;                     => ta hoàn toàn có thể return một cái gì đó ra ngoài trình duyệt để xem . 
+                $product = Product::find($id_pr);
+                // print ($product);
+                $product->delete();
+                return redirect()->route('products.index')
+                                ->with('success','Product deleted successfully');
+            }
+
+
+            Ví dụ : http://127.0.0.1:8000/products/18
+                print ($product);
+                return $id_pr;
+
+                {"id":18,"name":"Nuoc ngot Coca","detail":"Nuoc ngot co ga","created_at":"2023-02-19T14:04:44.000000Z","updated_at":"2023-02-19T14:04:44.000000Z"}
+                18  
+
+
+----------------------------------------------------------------------------------------------------------------------
+Hàm trong Controller 
+    + Ví dụ để thêm một sản phẩm thì sẽ cần có 2 hàm : 
+        + 1 Hàm để view form ra 
+        + 1 Hàm thực hiện lệnh add sản phẩm đó vào database và sau khi thực hiện add thành công thì trả về trang view nào đó . 
+        => 2 Hàm thì cũng cần 2 route trong file web.php  
+
+    + Còn xem đơn thuần thì tất nhiên cũng tùy chỉ cần 1 hàm . 
+    + Nói chung ta có thể ứng biến nhiều cách . 
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+    @push('styles')
+        <style>
+            /* Your custom styles here */
+        </style>
+    @endpush
+
+    
+    @push('scripts')
+        <script>
+            /* Your custom JavaScript here */
+        </script>
+    @endpush
+
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>@yield('title')</title>
+            @stack('styles')
+        </head>
+        <body>
+            @yield('content')
+            @stack('scripts')
+        </body>
+    </html>
+
+
+    Trong file con ta sẽ code vào một đoạn css hoặc js . Được đặt trong 
+        @push('style_index')
+            <style>
+                /* Your custom styles here */
+            </style>
+        @endpush
+
+
+        @push('scripts_index')
+            <script>
+                /* Your custom JavaScript here */
+            </script>
+        @endpush
+
+
+        => Như đã biết thì đoạn code css phải để trong thẻ head . Đoạn code js phải để cuối body 
+        chính vì thế mà ta dùng push và stack 
+
+    Trong file cha : 
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Laravel 8 CRUD Application - ItSolutionStuff.com</title>
+                <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css" rel="stylesheet">
+                @stack('style_index')
+            </head>
+            <body>
+            
+            <div class="container">
+                <h1>
+                -----------------------------------------------------------------------------------
+                </h1> 
+                @yield('content')
+                <h1>
+                -----------------------------------------------------------------------------------
+                </h1> 
+            </div>
+            
+
+            @stack('script_index')
+            </body>
+            </html>
+    
+        => Và chính vì file con kế thừa từ file cha (@extends('products.layout'), @yield('content'))
+        => nên tất nhiên là nó kế thừa luôn thẻ head các kiểu . Chính vì thế là hoạt động . 
+
+
+    CHÚ Ý : Với Css thì ta có thể code trực tiếp vào file Blade con như đã nói . 
+    Nhưng mà Code js thì nên dùng push vào file con và stack vào file cha . Nếu không nó sẽ không chạy  
+
+        đoạn code này vào cuối file con .
+        @push('script_index')
+            <script>
+                var ten_manh = document.getElementById('ten_manh');
+                ten_manh.onclick = function() {
+                    ten_manh.style.color = "blue";
+                }
+            </script>
+        @endpush()
+
+        và sau đó thêm @stack('script_index') vào cuối body của file cha . 
+
+
+    CHÚ Ý : 
+        file con Blade nào sẽ có đoạn JS và CSS riêng của file đó và với tên riêng khác nhau => nếu có 2 file giống nhau 
+        thì nó chỉ chạy 1 file . Và được khai báo độc lập vào file cha . 
+
+        index.blade.php : 
+            @push('script_index')
+                <script>
+                    var ten_manh = document.getElementById('ten_manh');
+                    ten_manh.onclick = function() {
+                        ten_manh.style.color = "blue";
+                    }
+                </script>
+            @endpush()
+
+
+        create.blade.php : 
+            @push('script_create')
+                <script>
+                    var ten2 = document.getElementById('ten2');
+                    ten2.onclick = function() {
+                        ten2.style.color = "green";
+                    }
+                </script>
+            @endpush()
+
+        
+        layout.blade.php 
+            @stack('script_index')
+            @stack('script_create')
+
+        Và do dùng chung file cha nên nếu trong 2 đoạn script của 2 file con có hai biến trùng tên 
+        thì nó cũng sẽ không hoạt động . 
+
+----------------------------------------------------------------------------------------------------------------------
+    Dùng file css hoặc js ở folder public vào file Blade 
+    Để sử dụng một file CSS hoặc JS từ thư mục public cho một tệp Blade, bạn có thể sử dụng hàm asset() của Laravel. Hàm này trả về đường dẫn tuyệt đối đến một tệp trong thư mục public.
+    Ví dụ, để sử dụng một tệp CSS được đặt trong public/css/styles.css cho một tệp Blade, bạn có thể thêm nội dung sau vào tệp Blade:
+        <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+
+    Tương tự, để sử dụng một tệp JS được đặt trong public/js/script.js, bạn có thể thêm nội dung sau vào tệp Blade:
+        <script src="{{ asset('js/script.js') }}"></script>
+        Lưu ý rằng asset() trả về một đường dẫn tuyệt đối, do đó không cần phải sử dụng đường dẫn tương đối để đến các tệp trong thư mục public.
+
+
+    CHÚ Ý : 
+        @extends('products.layout')
+        <link rel="stylesheet" href="{{ asset('css/style_create.css') }}">
+        
+        @section('content')
+
+        <script src="{{ asset('js/script_create.js') }}"></script>
+        @endsection
+
+        => link css có thể đặt trong hoặc ngoài @section và nên đặt sau @extends
+        => nhưng js thì phải đặt trong @section mới được 
+
+        @push thì được đặt ngoài @section . 
+
+        Một file Blade có thể đọc được 
+            + Css 
+                + Từ chính file 
+                + Từ push và Stack 
+                + Từ file trong folder public/css 
+            
+            + Js 
+                + Từ push và Stack 
+                + Từ file trong folder public/js 
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+Eloquent là một ORM (Object-Relational Mapping) trong Laravel, nó cung cấp một cách dễ dàng để tương tác với cơ sở dữ liệu của ứng dụng. Một số hàm phổ biến của Eloquent bao gồm:
+    all(): Lấy tất cả các bản ghi từ bảng.
+    find(): Tìm bản ghi theo khóa chính.
+    findOrFail(): Tìm bản ghi theo khóa chính hoặc trả về lỗi nếu không tìm thấy.
+    first(): Lấy bản ghi đầu tiên từ bảng.
+    get(): Lấy một bộ sưu tập của các bản ghi từ bảng.
+    count(): Đếm số lượng bản ghi trong bảng.
+    create(): Tạo mới một bản ghi trong bảng.
+    update(): Cập nhật một bản ghi trong bảng.
+    delete(): Xóa một bản ghi khỏi bảng.
+    orderBy(): Sắp xếp bản ghi theo thứ tự tăng dần hoặc giảm dần.
+    limit(): Giới hạn số lượng bản ghi được trả về.
+    with(): Tải các mối quan hệ được chỉ định của bản ghi.
+
+    pluck(): Lấy một cột duy nhất từ bảng dữ liệu.
+    count(): Đếm số lượng bản ghi trong bảng dữ liệu.
+    max(): Lấy giá trị lớn nhất của một cột từ bảng dữ liệu.
+    min(): Lấy giá trị nhỏ nhất của một cột từ bảng dữ liệu.
+    avg(): Lấy giá trị trung bình của một cột từ bảng dữ liệu.
+    sum(): Tính tổng giá trị của một cột từ bảng dữ liệu.
+    orderBy(): Sắp xếp kết quả theo một hoặc nhiều trường dữ liệu.
+    groupBy(): Nhóm kết quả theo một hoặc nhiều trường dữ liệu.
+    having(): Thêm một điều kiện cho nhóm dữ liệu.
+    distinct(): Lấy các giá trị duy nhất của một cột từ bảng dữ liệu.
+    whereBetween(): Lấy kết quả trong một khoảng giá trị cụ thể.
+    whereNotBetween(): Lấy kết quả ngoài khoảng giá trị cụ thể.
+    whereIn(): Lấy kết quả trong một danh sách giá trị cụ thể.
+    whereNotIn(): Lấy kết quả không trong danh sách giá trị cụ thể.
+    whereNull(): Lấy kết quả có giá trị null.
+    whereNotNull(): Lấy kết quả không có giá trị null.
+    whereDate(): Lấy kết quả trong một ngày cụ thể.
+    whereMonth(): Lấy kết quả trong một tháng cụ thể.
+    whereDay(): Lấy kết quả trong một ngày của tháng cụ thể.
+    whereYear(): Lấy kết quả trong một năm cụ thể.
+
+Các hàm tham gia cho hàm join() trong Laravel:
+    select() - chọn cột để lấy trong bảng tham gia
+    where() - áp dụng điều kiện cho kết quả trả về
+    orderBy() - sắp xếp kết quả trả về theo một hoặc nhiều cột
+    groupBy() - nhóm kết quả trả về theo một cột
+    having() - áp dụng điều kiện sau khi nhóm kết quả trả về
+    distinct() - lấy giá trị duy nhất từ kết quả trả về
+    count() - đếm số bản ghi được trả về
+    sum() - tính tổng giá trị của một cột trong bảng tham gia
+    max() - lấy giá trị lớn nhất của một cột trong bảng tham gia
+    min() - lấy giá trị nhỏ nhất của một cột trong bảng tham gia
+    avg() - tính giá trị trung bình của một cột trong bảng tham gia
+    joinSub() - thực hiện một câu lệnh con để tham gia bảng
+    joinWhere() - thêm một điều kiện where vào tham gia bảng
+    leftJoin() - tham gia bảng bên trái (left join)
+    rightJoin() - tham gia bảng bên phải (right join)
+    crossJoin() - tham gia bảng theo phương pháp kết hợp chéo (cross join)
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Middleware 
+    Middleware trong Laravel là một cơ chế để xử lý các request trước khi chúng được định tuyến đến các route tương ứng. Middleware có thể được sử dụng để kiểm tra và xác thực request, quản lý phiên làm việc, log các thông tin request, thêm headers vào response, và nhiều tác vụ khác.
+    Mỗi Middleware trong Laravel sẽ có một nhiệm vụ cụ thể và sẽ được chạy trước hoặc sau một request được xử lý. Middleware được chạy theo thứ tự xác định trong file app/Http/Kernel.php.
+    Laravel cung cấp cho người dùng một số Middleware có sẵn, bao gồm middleware xác thực người dùng (auth), middleware kiểm tra quyền (authorize), middleware chống tấn công CSRF (verified), middleware phân trang (pagination) và nhiều Middleware khác nữa. Ngoài ra, người dùng có thể tự tạo ra các Middleware riêng cho các nhiệm vụ cụ thể của mình.
+    => Laravel có rất nhiều file Middleware có thể học . 
+
+----------------------------------------------------------------------------------------------------------------------
+Auth : Chuyển hướng khi chưa đăng nhập 
+
+@extends('admin.layout')
+
+@if (auth()->check())
+    <!-- Nội dung trang dashboard -->
+    <h1>Welcome to dashboard</h1>
+    <p>You are logged in as {{ auth()->user()->name }}</p>
+    <form action="{{ route('admin.logout') }}" method="POST">
+        @csrf
+        <button type="submit">Logout</button>
+    </form>
+@else
+    <!-- Chuyển hướng sang trang đăng nhập nếu chưa đăng nhập -->
+    {{ redirect()->route('admin.login') }}
+    <!-- <script>window.location = "{{ route('admin.login') }}"</script> -->
+
+@endif
+
+
+ <!-- 
+        Trong Laravel có sẵn file  Http/Middleware/Authenticate.php để xác thực và chuyển hướng . 
+        Nội dung gốc là : 
+            protected function redirectTo($request)
+            {
+                if (! $request->expectsJson()) {
+                    return route('login');
+                }
+            }
+            => vì route của ta là 
+                Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
+
+            Nên sửa lại : 
+            protected function redirectTo($request)
+            {
+                if (! $request->expectsJson()) {
+                    return route('admin.login');
+                }
+            }
+
+            => vậy mỗi khi chưa đăng nhập mà vào các route có middleware ví dụ : 
+            Route::get('/dashboard', [AdminController::class, 'dashboard'])
+                ->middleware('auth') 
+                ->name('admin.dashboard');
+
+            thì nó sẽ chuyển hướng đến trang login
+
+-->
+
+<!-- Thật ra không cần code như trên, không cần kiểm tra có đăng nhập chưa các kiểu . 
+Bởi vì khi ta đăng kí trong route middleware như trên :             
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])
+                ->middleware('auth') 
+                ->name('admin.dashboard');
+thì nó sẽ tự động kiểm tra mỗi khi vào /dashboard            
+Vậy nên ta chỉ cần code lại như sau : 
+-->
+
+@extends('admin.layout')
+<h1>Welcome to dashboard</h1>
+<p>You are logged in as {{ auth()->user()->name }}</p>
+<form action="{{ route('admin.logout') }}" method="POST">
+    @csrf
+    <button type="submit">Logout</button>
+</form>
+<!-- Như vậy là được rồi .  -->
+
+
+----------------------------------------------------------------------------------------------------------------------
+Laravel kiểm tra đã xác thực hay chưa bằng cách nào . Có biến nào được tạo ra vào lưu ở cookie hay session không ?
+    Laravel sử dụng hệ thống xác thực của PHP, cụ thể là session để lưu trữ thông tin đăng nhập của người dùng. 
+    Khi người dùng đăng nhập thành công, Laravel sẽ lưu thông tin đăng nhập của người dùng vào session, và sau đó sử dụng session để xác định xem người dùng đã được xác thực hay chưa.
+    Laravel cung cấp một biến Auth để kiểm tra xem người dùng đã đăng nhập hay chưa. Biến Auth là một đối tượng được cung cấp bởi Laravel để thao tác với hệ thống xác thực. Để kiểm tra xem người dùng đã được xác thực hay chưa, bạn có thể sử dụng phương thức check() của biến Auth. Ví dụ:
+        
+        use Illuminate\Support\Facades\Auth;
+        
+        if (Auth::check()) {
+            // Người dùng đã đăng nhập
+        } else {
+            // Người dùng chưa đăng nhập
+        }
+   
+    Ngoài ra, Laravel cũng cung cấp các phương thức và biến hỗ trợ khác để thao tác với hệ thống xác thực, chẳng hạn như user() để lấy thông tin người dùng đã đăng nhập, id() để lấy ID của người dùng đăng nhập, guest() để kiểm tra xem người dùng đã đăng nhập hay chưa, và attempt() để thực hiện xác thực.
+
+
+----------------------------------------------------------------------------------------------------------------------
+AdminController::Login 
+
+    public function login(Request $request){
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect('/dashboard')->with('success', 'You have been logged in.');
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+    }
+
+    Giải thích code : 
+        Đầu tiên, hàm sử dụng phương thức validate() của đối tượng Request để kiểm tra tính hợp lệ của dữ liệu đầu vào, bao gồm email và password.
+        Sau đó, hàm sử dụng phương thức only() để trích xuất ra các thông tin email và password từ đối tượng Request và lưu vào biến $credentials.
+        Hàm tiếp đó sử dụng phương thức attempt() của đối tượng Auth để kiểm tra xem thông tin đăng nhập có hợp lệ hay không. 
+        Nếu thông tin đăng nhập hợp lệ, hàm sử dụng phương thức regenerate() của đối tượng Session để tạo lại session và đăng nhập người dùng. 
+        Sau đó, hàm chuyển hướng người dùng đến trang dashboard và thông báo đăng nhập thành công thông qua đối tượng RedirectResponse.
+        Nếu thông tin đăng nhập không hợp lệ, hàm sử dụng phương thức withErrors() để tạo một thông báo lỗi và chuyển hướng người dùng 
+        trở lại trang đăng nhập thông qua phương thức back() của đối tượng Redirector.
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+AdminController::Logout 
+    public function logout(Request $request){
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login')->with('success', 'You have been logged out.');
+    }
+
+    Giải thích code : 
+        Auth::logout() sẽ đăng xuất người dùng đang đăng nhập, xóa bỏ session của người dùng, nếu có.
+        $request->session()->invalidate() sẽ xóa bỏ tất cả các dữ liệu session của người dùng.
+        $request->session()->regenerateToken() sẽ tạo ra một token mới cho session, giúp đảm bảo an toàn cho ứng dụng.
+        Cuối cùng, phương thức sẽ chuyển hướng người dùng về trang đăng nhập và hiển thị thông báo "Bạn đã đăng xuất thành công".
+
+
+    => Còn lại các hàm register,dashboard,... và các hàm còn lại khá đơn giản không có gì cả . 
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Đăng kí middleware cho một nhóm các route 
+    + Ta chỉ cần bê nguyên nhóm route đó vào 
+        Route::middleware(['auth'])->group(function () {
+            .... routes ....
+        });
+
+    + Ví dụ : 
+
+        // Product 
+        Route::get('/products', [ProductController::class,'index'])->name('products.index'); // xem list product 
+        Route::get('/products/abc', [ProductController::class,'abc'])->name('products.abc'); // test 
+        Route::get('/products/abc333', [ProductController::class,'abc222'])->name('products.abc111'); // test 
+        // Route::get('/products/abc333', [ProductController::class,'abc222'])->name('productsabc111'); // vẫn được 
+        Route::get('/products/create', [ProductController::class,'create'])->name('products.create'); // form tạo product 
+        Route::get('/products/{id}', [ProductController::class,'show'])->name('products.show'); // show chi tiết sản phẩm 
+        Route::get('/products/{id}/edit', [ProductController::class,'edit'])->name('products.edit'); // form chỉnh sửa sản phẩm 
+        Route::post('/products', [ProductController::class,'store'])->name('products.store222'); // hàm tạo 
+        Route::put('/products/{id}', [ProductController::class,'update'])->name('products.update'); // hàm update 
+        Route::delete('/products/{id}', [ProductController::class,'destroy'])->name('products.destroy'); // hàm xóa 
+        => Đăng kí middleware cho nhóm route này . 
+
+        // Cách đăng kí middleware cho một nhóm các route 
+        Route::middleware(['auth'])->group(function () {
+            // Product 
+            Route::get('/products', [ProductController::class,'index'])->name('products.index'); // xem list product 
+            Route::get('/products/abc', [ProductController::class,'abc'])->name('products.abc'); // test 
+            Route::get('/products/abc333', [ProductController::class,'abc222'])->name('products.abc111'); // test 
+            // Route::get('/products/abc333', [ProductController::class,'abc222'])->name('productsabc111'); // vẫn được 
+            Route::get('/products/create', [ProductController::class,'create'])->name('products.create'); // form tạo product 
+            Route::get('/products/{id}', [ProductController::class,'show'])->name('products.show'); // show chi tiết sản phẩm 
+            Route::get('/products/{id}/edit', [ProductController::class,'edit'])->name('products.edit'); // form chỉnh sửa sản phẩm 
+
+            Route::post('/products', [ProductController::class,'store'])->name('products.store222'); // hàm tạo 
+            Route::put('/products/{id}', [ProductController::class,'update'])->name('products.update'); // hàm update 
+            Route::delete('/products/{id}', [ProductController::class,'destroy'])->name('products.destroy'); // hàm xóa 
+        });
+
+
+        => Vậy là chỉ cần vào bất kì một route nào trong các route trên thì đều cần phải đăng nhập . Nếu không sẽ được 
+        trả về trang đăng nhập . 
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Tạo SSH Key 
+    + Khi gặp lỗi này : 
+            C:\Users\MANH\Downloads\OT\Github>git clone git@github.com:NguyenVanManh-AI/Laravel-Auth-and-CRUD.git
+            Cloning into 'Laravel-Auth-and-CRUD'...
+            git@github.com: Permission denied (publickey).
+            fatal: Could not read from remote repository.
+
+            Please make sure you have the correct access rights
+            and the repository exists.
+        => Hãy đi tạo một SSH key mới .  
+
+    + Mở Gitbash lên và nhập các lệnh dưới : 
+        MANH@MSI MINGW64 ~/Downloads/OT/Github
+        $ ssh-keygen -t rsa -b 4096 -C "nguyenvanmanh200it1@gmail.com"  ===> là email github của mình 
+        Generating public/private rsa key pair.
+        Enter file in which to save the key (/c/Users/MANH/.ssh/id_rsa):   ===> enter 
+        Enter passphrase (empty for no passphrase):                        ===> enter
+        Enter same passphrase again:                                       ===> enter
+        Your identification has been saved in /c/Users/MANH/.ssh/id_rsa
+        Your public key has been saved in /c/Users/MANH/.ssh/id_rsa.pub
+        The key fingerprint is:
+        SHA256:13/0++sUGJAbArOdTGqk4RF7G/EL4ajb2ucorTXnmAE nguyenvanmanh200it1@gmail.com
+        The key's randomart image is:
+        +---[RSA 4096]----+
+        |     +.*.. ..    |
+        |    . O @..o.    |
+        |     = O =. o.   |
+        |    . o + .o  o  |
+        |   E   .S.. .. ..|
+        |    +    .   . .o|
+        |   ..= .      ..o|
+        |   .+.O.      ...|
+        |   oo=oo      .++|
+        +----[SHA256]-----+
+        
+        MANH@MSI MINGW64 ~/Downloads/OT/Github
+        $
+
+    + Vào folder : C:\Users\MANH\.ssh 
+        => Mở file vừa mới được tạo : id_rsa.pub bằng notepad và copy toàn bộ nội dung đó 
+    
+    + Vào : https://github.com/settings/keys
+        => Chọn New SSH Key => Paste vào => Add 
+
+    => XONG ! 
+
+
+----------------------------------------------------------------------------------------------------------------------
+Giải thích :  {{ __('Register') }} , {{ __('Name') }} , {{ __('E-Mail Address') }} , {{ __('Password') }} nghĩa là gì ?
+    Trong Laravel, {{ __('key') }} được sử dụng để lấy giá trị tương ứng của "key" trong các tệp ngôn ngữ (language files). Giá trị này thường được sử dụng để hiển thị các thông điệp người dùng, nhãn form, tiêu đề và các chuỗi văn bản khác.
+    Các "key" được sử dụng trong các ví dụ của bạn liên quan đến đăng ký người dùng và gồm có:
+
+    Register: Là một "key" đại diện cho thông điệp "Đăng ký" trong tệp ngôn ngữ của ứng dụng.
+    Name: Là một "key" đại diện cho nhãn "Họ và tên" trong mẫu đăng ký người dùng.
+    E-Mail Address: Là một "key" đại diện cho nhãn "Địa chỉ email" trong mẫu đăng ký người dùng.
+    Password: Là một "key" đại diện cho nhãn "Mật khẩu" trong mẫu đăng ký người dùng.
+
+    Ví dụ : 
+        <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+        => Đơn giản nó chỉ là một label không ảnh hưởng gì cả . 
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+Trình tự hoạt động khi có lỗi : 
+
+        Ở file register.blade.php có đoạn code 
+            @error('name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        
+        Và ở hàm register của AdminController có đoạn code : 
+            public function register(Request $request){
+                $request->validate([
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'password' => 'required|string|min:8|confirmed',
+                ]);
+        
+                User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => bcrypt($request->password),
+                ]);
+        
+                return redirect('/login')->with('success', 'Your account has been created. Please login to continue.');
+            }
+        
+        Vậy có phải biến $message được sinh ra khi kiểm tra có tồn tại @error('name') . 
+        Mà @error('name') được sinh ra khi $request->validate . Trình tự hoạt động như vậy đúng không ? 
+
+
+    Trả lời : 
+        Đúng, biến $message được sinh ra khi có lỗi được phát hiện trong quá trình kiểm tra dữ liệu với validate() 
+        và khi sử dụng hàm @error('name') trong file register.blade.php.
+        Trình tự hoạt động cụ thể như sau:
+            Khi bạn gửi một yêu cầu đăng ký tài khoản, trong hàm register() của AdminController, các giá trị được 
+            truyền từ biểu mẫu đăng ký sẽ được kiểm tra với các quy tắc đã được định nghĩa trong phương thức validate().
+            Nếu có lỗi xảy ra trong quá trình kiểm tra, biến $errors sẽ được tạo ra với các thông tin lỗi tương ứng.
+            Khi hiển thị form đăng ký trên trang web, nếu có lỗi xảy ra, hàm @error('name') sẽ được gọi để hiển thị thông báo lỗi 
+            tương ứng cho người dùng. Biến $message được truyền vào bởi Laravel để hiển thị thông báo lỗi chi tiết cho người dùng.
+            Vì vậy, có thể nói rằng biến $message được sinh ra khi có lỗi xảy ra trong quá trình kiểm tra dữ liệu với validate(), 
+            và được sử dụng để hiển thị thông báo lỗi cho người dùng thông qua hàm @error('name') trong file register.blade.php.
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+    $items = $request->items ?? 10; 
+    => Nếu $request->items không có giá trị thì $items = 10 . Ngược lại thì nhận giá trị của $request->items .
+
+
+----------------------------------------------------------------------------------------------------------------------
+Laravel:OAuth2
+    + https://socialiteproviders.com/about/#provider-issues
+
+    + Client ID and Client Secret API
+        + Google : https://console.cloud.google.com/apis/credentials/oauthclient/1079359168744-ehm0qmfgmg4imvbk33n7d97t69sfjb87.apps.googleusercontent.com?project=soy-vision-362513
+        + Github : https://github.com/settings/applications/new
+        + Facebook : https://developers.facebook.com/apps/464118715744858/settings/basic/
+
+    + composer require laravel/passport (https://laravel.com/docs/10.x/passport)
+    + composer require socialiteproviders/google (https://socialiteproviders.com/Google-Plus)
+    + composer require socialiteproviders/facebook (https://socialiteproviders.com/Facebook/) 
+    + composer require socialiteproviders/github (https://socialiteproviders.com/GitHub)
+
+    .env 
+        GOOGLE_CLIENT_ID=1079359168744-5c57ii2sljdgihdh7bmdrculb93q4qut.apps.googleusercontent.com
+        GOOGLE_CLIENT_SECRET=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
+        GOOGLE_REDIRECT_URI=http://127.0.0.1:8000/auth/google/callback 
+
+        FACEBOOK_CLIENT_ID=464118715744858
+        FACEBOOK_CLIENT_SECRET=38de2df7d427d3392375b21384ed8b9b
+        FACEBOOK_REDIRECT_URI=http://127.0.0.1:8000/auth/facebook/callback
+
+        GITHUB_CLIENT_ID=0ce2f548f9160e1c194b
+        GITHUB_CLIENT_SECRET=b65ba0bcadc14225b459d8c58d5a8d6c810fbcbe
+        GITHUB_REDIRECT_URI=http://127.0.0.1:8000/auth/github/callback
+
+    services.php 
+        'google' => [    
+            'client_id' => env('GOOGLE_CLIENT_ID'),  
+            'client_secret' => env('GOOGLE_CLIENT_SECRET'),  
+            'redirect' => env('GOOGLE_REDIRECT_URI') 
+        ],
+        
+        'facebook' => [    
+            'client_id' => env('FACEBOOK_CLIENT_ID'),  
+            'client_secret' => env('FACEBOOK_CLIENT_SECRET'),  
+            'redirect' => env('FACEBOOK_REDIRECT_URI') 
+        ],
+        
+        'github' => [    
+            'client_id' => env('GITHUB_CLIENT_ID'),  
+            'client_secret' => env('GITHUB_CLIENT_SECRET'),  
+            'redirect' => env('GITHUB_REDIRECT_URI') 
+        ],
+
+
+
+------------------------------------------------------------------------------------------------
+    + Kéo thả ảnh từ folder vào khung : Key => Drag and drop Image Uploader Example
+        + https://www.jqueryscript.net/form/drag-drop-image-uploader.html
