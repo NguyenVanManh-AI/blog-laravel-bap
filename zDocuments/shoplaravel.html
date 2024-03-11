@@ -1,0 +1,223 @@
+============================================================
+? Laravel khi khởi tạo thì hệ thống role của nó mặc định là bảng users => nếu để chung account admin và user vào chung bảng users 
+này thì token của user có thể xác thực admin và ngược lại , bây giờ tôi muốn hệ thống 2 role (user,admin) để cho token của 
+user không xác thực được cho admin và tương tự token của admin cũng không xác thực được user (2 middleware auth('user') và auth('admin') 
+
+rep : 
+    Để tạo ra 2 middleware auth('user') và auth('admin'), bạn có thể sử dụng package Laravel Sanctum. 
+    Sau khi cài đặt Sanctum, bạn cần cấu hình guards cho các role tương ứng.
+    Trước tiên, bạn cần chỉ định cột role trong bảng users để lưu trữ vai trò của người dùng. Sau đó, bạn cần cấu hình guards cho vai trò bằng cách thêm nội dung sau vào file config/auth.php:
+       
+        'guards' => [
+            'user' => [
+                'driver' => 'sanctum',
+                'provider' => 'users',
+                'hash' => false,
+            ],
+            'admin' => [
+                'driver' => 'sanctum',
+                'provider' => 'admins',
+                'hash' => false,
+            ],
+        ],
+
+
+    Ở đây, user và admin là tên của guard, sanctum là driver được sử dụng, users và admins là provider được sử dụng để xác thực, 
+    và hash được đặt thành false để cho phép xác thực không cần mật khẩu.
+
+    Sau đó, bạn cần tạo ra 2 provider khác nhau để cung cấp dữ liệu đăng nhập. 
+    Ví dụ, bạn có thể tạo ra 2 bảng users và admins, và cấu hình provider tương ứng như sau:
+
+        'providers' => [
+            'users' => [
+                'driver' => 'eloquent',
+                'model' => App\Models\User::class,
+            ],
+            'admins' => [
+                'driver' => 'eloquent',
+                'model' => App\Models\Admin::class,
+            ],
+        ],
+
+    Ở đây, users và admins là tên của provider, eloquent là driver được sử dụng để cung cấp dữ liệu, 
+    và User và Admin là tên của model được sử dụng để thao tác với bảng tương ứng.
+
+    Sau khi cấu hình xong, bạn có thể sử dụng middleware auth('user') và auth('admin') để xác thực người dùng tương ứng:
+
+    Route::middleware(['auth:admin'])->group(function () {
+        // các route chỉ được truy cập bởi admin
+    });
+
+    Route::middleware(['auth:user'])->group(function () {
+        // các route chỉ được truy cập bởi user
+    });
+    Lưu ý rằng, nếu bạn muốn xác thực cả user và admin bằng token, bạn cần sử dụng cả 2 middleware auth('user') và auth('admin'). 
+    Nếu chỉ sử dụng 1 trong 2 middleware, token của user có thể xác thực được cho admin và ngược lại.
+
+
+Code : 
+
+    C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel>composer require laravel/sanctum
+    C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel>php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+    C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel>php artisan migrate
+
+    + C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel\config\auth.php
+        'guards' => [
+            'user' => [
+                'driver' => 'sanctum',
+                'provider' => 'users',
+                'hash' => false,
+            ],
+            'admin' => [
+                'driver' => 'sanctum',
+                'provider' => 'admins',
+                'hash' => false,
+            ],
+            'api' => [
+                'driver' => 'token',
+                'provider' => 'users',
+                'hash' => false,
+            ],
+        ],
+
+        'providers' => [
+            'users' => [
+                'driver' => 'eloquent',
+                'model' => App\Models\User::class,
+            ],
+            'admins' => [
+                'driver' => 'eloquent',
+                'model' => App\Models\Admin::class,
+            ],
+
+            // 'users' => [
+            //     'driver' => 'database',
+            //     'table' => 'users',
+            // ],
+        ],
+
+    C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel>php artisan make:migration create_admins_table
+        public function up()
+        {
+            Schema::create('admins', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password');
+                $table->rememberToken();
+                $table->timestamps();
+            });
+        }
+    C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel>php artisan migrate
+
+    C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel\routes\web.php
+        Route::middleware(['auth:admin'])->group(function () {
+            // các route chỉ được truy cập bởi admin
+        });
+        
+        Route::middleware(['auth:user'])->group(function () {
+            // các route chỉ được truy cập bởi user
+        });
+============================================================
+
+C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel>php artisan make:controller UserController
+C:\Users\ADMIN\Downloads\ShopLaravel\shoplaravel>php artisan make:model Admin -m -c
+    Note : php artisan make:model NameFolder/Post -m -c
+        => Model, Controller Post sẽ được tạo trong folder NameFolder nằm trong folder Model, Controler 
+        php artisan make:model Post -m -c -v -s => tạo model, controller, view, seed 
+
+============================================================
+? Làm sao để khi chạy project thì laravel có thanh ở dưới của laravel 
+Rep : 
+    Để có thanh debug bar (thanh ở dưới của Laravel) khi chạy project, bạn cần cài đặt và kích hoạt gói laravel-debugbar.
+    Bước 1: Cài đặt gói laravel-debugbar
+    Chạy lệnh sau trong terminal:
+    composer require barryvdh/laravel-debugbar --dev
+    Gói này sẽ được cài đặt và kích hoạt cho môi trường local.
+    
+    Bước 2: Kích hoạt thanh debug bar
+    
+    Mở file config/app.php, tìm đến dòng 'providers' và thêm provider sau vào mảng:
+    
+    Barryvdh\Debugbar\ServiceProvider::class,
+    Tiếp theo, tìm đến dòng 'aliases' và thêm alias sau vào mảng:
+    
+    'Debugbar' => Barryvdh\Debugbar\Facade::class,
+    Bước 3: Kiểm tra kết quả
+    
+    Khởi động lại server và mở trình duyệt, bạn sẽ thấy thanh debug bar ở dưới của Laravel.
+    
+    Lưu ý: Nếu bạn muốn kích hoạt thanh debug bar cho các môi trường khác, bạn có thể cấu hình trong file config/debugbar.php.
+    Để tắt nó đi thì làm gì 
+    Bạn có thể tắt thanh Laravel Debugbar bằng cách vào file .env của project và đặt giá trị APP_DEBUG thành false. Ví dụ:
+    
+    APP_DEBUG=false
+    Sau đó, bạn cần phải thực hiện khởi động lại server để áp dụng thay đổi.
+
+============================================================
+npm install bootstrap jquery popper.js
+
+============================================================
+ví dụ đơn giản về ajax trong laravel
+
+Dưới đây là một ví dụ đơn giản về việc sử dụng Ajax trong Laravel để tải dữ liệu từ server mà không cần tải lại trang.
+
+Tạo một route trong routes/web.php để xử lý Ajax request:
+Route::get('/get-data', 'DataController@getData')->name('get-data');
+Tạo một controller DataController và phương thức getData để trả về dữ liệu:
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class DataController extends Controller
+{
+    public function getData(Request $request)
+    {
+        // Trả về dữ liệu dạng JSON
+        return response()->json([
+            'data' => ['foo', 'bar', 'baz']
+        ]);
+    }
+}
+Tạo một view để hiển thị dữ liệu trả về từ Ajax request:
+<!-- View data.blade.php -->
+<div id="data"></div>
+Sử dụng jQuery để gửi Ajax request lên server và hiển thị dữ liệu trả về:
+<!-- View data.blade.php -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: "{{ route('get-data') }}",
+            type: "GET",
+            success: function(response) {
+                var data = response.data;
+                var html = '';
+                for (var i = 0; i < data.length; i++) {
+                    html += '<p>' + data[i] + '</p>';
+                }
+                $('#data').html(html);
+            }
+        });
+    });
+</script>
+
+
+============================================================
+$query = $request->get('query');
+if($query != ''){
+    $data = DB::table('book')
+    ->where('KiHieu','like', '%'.$query.'%')
+    ->orWhere('TiengAnh','like', '%'.$query.'%')
+    ->orWhere('TiengViet','like', '%'.$query.'%')
+    ->orWhere('TiengNhat','like', '%'.$query.'%')
+    ->orderBy('id', 'desc')
+    ->paginate(100);
+}
+else{
+    $data = DB::table('book')->orderBy('id','desc')->paginate(100);
+}
+$total_row = $data->count();  => giả sử tìm được 550 dòng thì total_row = 100 dòng vì mình đã lấy paginate(100)
+$totalRows = $data->total(); => total() là thuộc tính tự có của nó => nó thống kê tổng số dòng và totalRows = 550 
+
